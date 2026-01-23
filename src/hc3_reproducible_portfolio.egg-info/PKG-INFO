@@ -1,0 +1,65 @@
+Metadata-Version: 2.4
+Name: hc3-reproducible-portfolio
+Version: 0.1.0
+Summary: Reproducible analysis pipeline for CRCNS hc-3 dataset (electrophysiology)
+Author-email: Tomás <tomas@example.com>
+License: MIT
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: scipy>=1.10.0
+Requires-Dist: matplotlib>=3.7.0
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: tqdm>=4.65.0
+Requires-Dist: seaborn>=0.12.0
+Requires-Dist: rich>=13.0.0
+Requires-Dist: tabulate>=0.9.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: ruff>=0.0.260; extra == "dev"
+Requires-Dist: black>=23.3.0; extra == "dev"
+Requires-Dist: mypy>=1.3.0; extra == "dev"
+
+# hc3 Reproducible Analysis Portfolio
+
+A professional, reproducible pipeline for analyzing electrophysiology data from the CRCNS hc-3 dataset (hippocampus/entorhinal cortex).
+
+## Goal
+To demonstrate rigorous data engineering, quality control, and scientific replication capabilities suitable for computational neuroscience research.
+
+## Features
+- **Project Structure**: Clean separation of source, config, data, and reports.
+- **Reproducibility**: Environment defined in `pyproject.toml`, pure Python scripts for analysis (no hidden notebook state).
+- **Data Engineering**: Robust parsers for legacy NeuroScope/Klusta formats (`.xml`, `.eeg`, `.res`, `.clu`).
+- **Quality Control**: Automated session scanning and signal validation.
+
+## Quickstart
+
+1. **Install Dependencies**:
+   ```bash
+   pip install -e .[dev]
+   ```
+
+2. **Configure Data Path**:
+   Copy the example config and edit it to point to your local data folder.
+   ```bash
+   cp configs/config.example.yaml configs/config.yaml
+   # Edit configs/config.yaml
+   ```
+
+3. **Scan for Sessions**:
+   ```bash
+   python scripts/hc3_scan_data.py --config configs/config.yaml
+   ```
+
+4. **Run Session Report**:
+   ```bash
+   python scripts/make_session_report.py --session ec013.423
+   ```
+
+## Repository Structure
+- `src/hc3`: Core python package.
+- `scripts`: Executable analysis steps.
+- `configs`: Configuration files.
+- `tests`: Unit tests.

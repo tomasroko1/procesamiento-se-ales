@@ -1,0 +1,14 @@
+README.md
+pyproject.toml
+src/hc3/__init__.py
+src/hc3/lfp.py
+src/hc3/qc.py
+src/hc3/schema.py
+src/hc3/viz.py
+src/hc3/io/__init__.py
+src/hc3/io/parser.py
+src/hc3_reproducible_portfolio.egg-info/PKG-INFO
+src/hc3_reproducible_portfolio.egg-info/SOURCES.txt
+src/hc3_reproducible_portfolio.egg-info/dependency_links.txt
+src/hc3_reproducible_portfolio.egg-info/requires.txt
+src/hc3_reproducible_portfolio.egg-info/top_level.txt

@@ -1,0 +1,28 @@
+# Configuration for hc3 analysis
+
+# Root directory where raw hc-3 data is located
+# STRUCTURE EXPECTED:
+# data_root/
+#   ec013.29/
+#     ec013.423/
+#       ec013.423.xml
+#       ec013.423.eeg
+#       ...
+data_root: "C:/Users/tomas/OneDrive/Escritorio/hc3"
+
+# Where to save generated figures and reports
+output_root: "./reports"
+
+# QC Parameters
+qc:
+  min_firing_rate_hz: 0.1
+  max_firing_rate_hz: 50.0  # likely MUA high rate
+  isi_violation_threshold: 0.02 # < 2ms
+
+# Analysis Parameters
+analysis:
+  lfp:
+    theta_band: [4, 12]
+    sampling_rate_target: 1250 # If downsampling needed
+  spikes:
+    bin_size_s: 0.001

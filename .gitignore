@@ -1,0 +1,26 @@
+# Data artifacts
+*.eeg
+*.dat
+*.fil
+*.lfp
+*.tar.gz
+*.zip
+
+# Analysis outputs
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+/reports/html/
+/figures/*.png
+/figures/*.pdf
+/figures/*.svg
+
+# Configuration with secrets or local paths
+configs/config.yaml
+
+# System
+.DS_Store
+Thumbs.db
