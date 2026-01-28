@@ -1,8 +1,9 @@
-import sys
 import argparse
-import yaml
 import logging
+import sys
 from pathlib import Path
+
+import yaml
 from rich.console import Console
 from rich.table import Table
 
@@ -13,9 +14,15 @@ from hc3.io import scan_sessions
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
+
 def main():
     parser = argparse.ArgumentParser(description="Scan for hc-3 sessions.")
-    parser.add_argument("--config", type=Path, default=Path("configs/config.yaml"), help="Path to config.yaml")
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/config.yaml"),
+        help="Path to config.yaml",
+    )
     args = parser.parse_args()
 
     if not args.config.exists():
@@ -45,14 +52,19 @@ def main():
     for s in sessions:
         table.add_row(
             s.id,
-            str(s.path.relative_to(data_root.parent) if data_root.parent in s.path.parents else s.path),
+            str(
+                s.path.relative_to(data_root.parent)
+                if data_root.parent in s.path.parents
+                else s.path
+            ),
             str(s.n_channels),
             str(len(s.shank_map)),
-            f"{s.sampling_rate:.0f} / {s.lfp_sampling_rate:.0f}"
+            f"{s.sampling_rate:.0f} / {s.lfp_sampling_rate:.0f}",
         )
 
     console.print(table)
     print(f"\nFound {len(sessions)} valid sessions.")
+
 
 if __name__ == "__main__":
     try:

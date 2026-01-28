@@ -1,1 +1,7 @@
-from .parser import load_session_metadata, load_lfp, load_spikes, scan_sessions, load_behavior
+from .parser import (
+    load_behavior,
+    load_lfp,
+    load_session_metadata,
+    load_spikes,
+    scan_sessions,
+)
