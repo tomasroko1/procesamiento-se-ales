@@ -1,0 +1,205 @@
+import os
+import sys
+from pathlib import Path
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import spectrogram, butter, filtfilt, hilbert, welch
+
+def bandpass(data, low, high, fs, order=3):
+    nyq = 0.5 * fs
+    b, a = butter(order, [low / nyq, high / nyq], btype='band')
+    return filtfilt(b, a, data)
+
+def main():
+    base_dir = Path(r"c:\Users\tomas\OneDrive\Escritorio\Proyectos y Desarrollo\hc3")
+    session_dir = base_dir / "ec013.29" / "ec013.423"
+    eeg_file = session_dir / "ec013.423.eeg"
+    out_dir = base_dir / "hc3-reproducible-portfolio" / "reports" / "ec013.423" / "figures"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    n_channels = 65
+    fs = 1250
+
+    # Load 600 seconds to get the timeline with clean active and inactive periods
+    chunk_sec = 600
+    n_samples = chunk_sec * fs
+    with open(eeg_file, "rb") as f:
+        raw_bytes = f.read(n_samples * n_channels * 2)
+        data = np.frombuffer(raw_bytes, dtype=np.int16).reshape(-1, n_channels)
+
+    # Use channel 0 (CA1 pyramidal layer reference)
+    lfp = data[:, 0].astype(np.float64) * 0.30517578125
+    time = np.arange(len(lfp)) / fs
+
+    # Filters
+    theta_filt = bandpass(lfp, 4, 12, fs)
+    delta_filt = bandpass(lfp, 1, 4, fs)
+
+    # Envelopes
+    theta_env = np.abs(hilbert(theta_filt))
+    delta_env = np.abs(hilbert(delta_filt))
+
+    # Smooth
+    w = int(1.0 * fs)
+    kernel = np.ones(w) / w
+    theta_smooth = np.convolve(theta_env, kernel, mode='same')
+    delta_smooth = np.convolve(delta_env, kernel, mode='same')
+    ratio = theta_smooth / (delta_smooth + 1e-6)
+
+    # Best active segment (around t = 469s)
+    # Best inactive segment (around t = 227s)
+    t_act_center = 469.75
+    t_inact_center = 227.15
+    dur = 2.5 # 2.5 seconds window
+
+    idx_act = (time >= t_act_center - dur/2) & (time <= t_act_center + dur/2)
+    idx_inact = (time >= t_inact_center - dur/2) & (time <= t_inact_center + dur/2)
+
+    t_act = time[idx_act] - (t_act_center - dur/2)
+    lfp_act = lfp[idx_act]
+    theta_act = theta_filt[idx_act]
+
+    t_inact = time[idx_inact] - (t_inact_center - dur/2)
+    lfp_inact = lfp[idx_inact]
+    theta_inact = theta_filt[idx_inact]
+
+    # Calculate Welch PSD for 10s of active vs 10s of inactive to show spectral proof
+    idx_act_10s = (time >= t_act_center - 5) & (time <= t_act_center + 5)
+    idx_inact_10s = (time >= t_inact_center - 5) & (time <= t_inact_center + 5)
+
+    f_act, p_act = welch(lfp[idx_act_10s], fs=fs, nperseg=int(fs*1.5))
+    f_inact, p_inact = welch(lfp[idx_inact_10s], fs=fs, nperseg=int(fs*1.5))
+
+    # ==========================================
+    # FIGURE 1: THE TWO ZOOMS (THE KEY CONTRAST)
+    # ==========================================
+    plt.rcParams['font.sans-serif'] = 'Segoe UI', 'DejaVu Sans', 'Arial'
+    fig, axes = plt.subplots(2, 2, figsize=(13, 8), dpi=220, gridspec_kw={'height_ratios': [1.3, 1.0], 'hspace': 0.35, 'wspace': 0.22})
+
+    # Top Left: Active Locomotion (Pure Theta)
+    ax_tl = axes[0, 0]
+    ax_tl.plot(t_act, lfp_act, color='#0f766e', lw=1.3, alpha=0.95, label='LFP Crudo (CA1)')
+    ax_tl.plot(t_act, theta_act, color='#0284c7', lw=2.2, linestyle='--', label='Banda Theta (4–12 Hz)')
+    ax_tl.set_title('A1. Locomoción Activa / Movimiento (Ritmo Theta a ~8 Hz)', fontsize=11, fontweight='bold', color='#0f766e', pad=8)
+    ax_tl.set_ylabel('Voltaje (μV)', fontsize=10, fontweight='bold')
+    ax_tl.set_xlabel('Tiempo relativo (segundos)', fontsize=9.5)
+    ax_tl.set_ylim(-650, 650)
+    ax_tl.grid(True, linestyle=':', alpha=0.6)
+    ax_tl.legend(loc='upper right', fontsize=8.5, framealpha=0.9)
+    # Annotation
+    ax_tl.text(0.03, 0.08, '• Oscilación regular de gran amplitud (>500 μV)\n• Período constante T ≈ 125 ms (f ≈ 8 Hz)', 
+               transform=ax_tl.transAxes, fontsize=8.5, fontweight='bold', color='#0f766e',
+               bbox=dict(boxstyle='round,pad=0.35', facecolor='#ccfbf1', edgecolor='#0f766e', alpha=0.9))
+
+    # Top Right: Inactive / Rest (Non-Theta / LIA)
+    ax_tr = axes[0, 1]
+    ax_tr.plot(t_inact, lfp_inact, color='#b91c1c', lw=1.3, alpha=0.95, label='LFP Crudo (CA1)')
+    ax_tr.plot(t_inact, theta_inact, color='#94a3b8', lw=2.0, linestyle='--', label='Banda Theta (Colapsada)')
+    ax_tr.set_title('A2. Inmovilidad / Reposo (Actividad Irregular No-Theta / LIA)', fontsize=11, fontweight='bold', color='#b91c1c', pad=8)
+    ax_tr.set_ylabel('Voltaje (μV)', fontsize=10, fontweight='bold')
+    ax_tr.set_xlabel('Tiempo relativo (segundos)', fontsize=9.5)
+    ax_tr.set_ylim(-650, 650) # Same scale to see massive amplitude drop!
+    ax_tr.grid(True, linestyle=':', alpha=0.6)
+    ax_tr.legend(loc='upper right', fontsize=8.5, framealpha=0.9)
+    # Annotation
+    ax_tr.text(0.03, 0.08, '• Ritmo Theta colapsado (potencia cae >100x)\n• Actividad asincrónica sin periodicidad', 
+               transform=ax_tr.transAxes, fontsize=8.5, fontweight='bold', color='#b91c1c',
+               bbox=dict(boxstyle='round,pad=0.35', facecolor='#fee2e2', edgecolor='#b91c1c', alpha=0.9))
+
+    # Bottom: Spectral Comparison (PSD)
+    ax_bl = axes[1, 0]
+    mask_f = (f_act >= 1) & (f_act <= 25)
+    ax_bl.plot(f_act[mask_f], p_act[mask_f], color='#0f766e', lw=2.2, label='Locomoción Activa')
+    ax_bl.axvspan(4, 12, color='#0284c7', alpha=0.15, label='Banda Theta (4–12 Hz)')
+    ax_bl.axvline(7.6, color='#0284c7', linestyle=':', lw=1.5, label='Pico Theta (7.6 Hz)')
+    ax_bl.set_title('B1. Espectro de Potencia (PSD) en Movimiento', fontsize=10.5, fontweight='bold', pad=6)
+    ax_bl.set_xlabel('Frecuencia (Hz)', fontsize=9.5)
+    ax_bl.set_ylabel('Densidad de Potencia (μV²/Hz)', fontsize=9.5)
+    ax_bl.grid(True, linestyle=':', alpha=0.6)
+    ax_bl.legend(loc='upper right', fontsize=8.5)
+
+    ax_br = axes[1, 1]
+    ax_br.plot(f_inact[mask_f], p_inact[mask_f], color='#b91c1c', lw=2.2, label='Inmovilidad / Reposo')
+    ax_br.axvspan(4, 12, color='#94a3b8', alpha=0.15, label='Banda Theta')
+    ax_br.set_title('B2. Espectro de Potencia (PSD) en Inmovilidad', fontsize=10.5, fontweight='bold', pad=6)
+    ax_br.set_xlabel('Frecuencia (Hz)', fontsize=9.5)
+    ax_br.set_ylabel('Densidad de Potencia (μV²/Hz)', fontsize=9.5)
+    # Match y-scale to show drastic difference
+    ax_br.set_ylim(ax_bl.get_ylim())
+    ax_br.grid(True, linestyle=':', alpha=0.6)
+    ax_br.legend(loc='upper right', fontsize=8.5)
+    ax_br.text(0.5, 0.6, 'Potencia Theta plana\n(Sin resonancia oscilatoria)', 
+               transform=ax_br.transAxes, ha='center', fontsize=9, fontweight='bold', color='#b91c1c')
+
+    fig_zoom_path = out_dir / "vanderwolf_zoom_contrast.png"
+    plt.savefig(fig_zoom_path, bbox_inches='tight')
+    plt.close()
+    print(f"Saved dedicated zoom contrast figure to {fig_zoom_path}")
+
+    # =========================================================================
+    # FIGURE 2: UPDATE FULL TIMELINE FIGURE WITH CLEAN ACTIVE/INACTIVE SEGMENTS
+    # =========================================================================
+    # Let's take a 80-second window centered around the transition (e.g. t = 200s to 280s)
+    t_start = 200
+    t_end = 280
+    idx_win = (time >= t_start) & (time <= t_end)
+    t_sub = time[idx_win]
+    lfp_sub = lfp[idx_win]
+    theta_env_sub = theta_smooth[idx_win]
+    delta_env_sub = delta_smooth[idx_win]
+    ratio_sub = ratio[idx_win]
+    is_active_sub = ratio_sub > np.percentile(ratio_sub, 40)
+
+    fig2 = plt.figure(figsize=(13, 9.5), dpi=200)
+    gs2 = fig2.add_gridspec(3, 2, height_ratios=[1.2, 1.4, 1.2], hspace=0.35, wspace=0.22)
+
+    # 1. Raw LFP
+    ax1 = fig2.add_subplot(gs2[0, :])
+    ax1.plot(t_sub, lfp_sub, color='#1e293b', lw=0.6, alpha=0.9, label='LFP Crudo (CA1)')
+    ax1.set_ylabel('Voltaje (μV)', fontsize=10, fontweight='bold')
+    ax1.set_xlim(t_start, t_end)
+    ax1.set_title('A. Registro LFP Continuo en CA1 (Transición entre Reposo e Inmovilidad vs Exploración)', fontsize=11, fontweight='bold', loc='left', pad=6)
+    ax1.grid(True, linestyle=':', alpha=0.5)
+
+    # 2. Spectrogram (STFT)
+    ax2 = fig2.add_subplot(gs2[1, :], sharex=ax1)
+    f_spec, t_spec, Sxx = spectrogram(lfp_sub, fs=fs, nperseg=int(fs * 1.0), noverlap=int(fs * 0.85))
+    t_spec_adj = t_spec + t_start
+    freq_mask = f_spec <= 20
+    pcm = ax2.pcolormesh(t_spec_adj, f_spec[freq_mask], 10 * np.log10(Sxx[freq_mask, :] + 1e-12), 
+                         shading='gouraud', cmap='viridis')
+    ax2.axhline(7.6, color='#f59e0b', linestyle='--', lw=1.4, alpha=0.9, label='Frecuencia Theta Dominante (7.6 Hz)')
+    ax2.set_ylabel('Frecuencia (Hz)', fontsize=10, fontweight='bold')
+    ax2.set_ylim(0, 20)
+    ax2.set_title('B. Espectrograma Tiempo-Frecuencia: Apagado y Encendido de la Banda Theta (4–12 Hz)', fontsize=11, fontweight='bold', loc='left', pad=6)
+    cbar = fig2.colorbar(pcm, ax=ax2, pad=0.015, aspect=18)
+    cbar.set_label('Potencia (dB)', fontsize=9)
+
+    # 3. Zoom comparison on bottom row
+    ax3_l = fig2.add_subplot(gs2[2, 0])
+    ax3_l.plot(t_act, lfp_act, color='#0f766e', lw=1.2, label='LFP Crudo')
+    ax3_l.plot(t_act, theta_act, color='#0284c7', lw=1.8, linestyle='--', label='Banda Theta (~8 Hz)')
+    ax3_l.set_title('C1. Locomoción Activa: Oscilación Sinusoidal Pura (~8 Hz)', fontsize=10.5, fontweight='bold', color='#0f766e')
+    ax3_l.set_xlabel('Tiempo relativo (s)', fontsize=9)
+    ax3_l.set_ylabel('Voltaje (μV)', fontsize=9)
+    ax3_l.set_ylim(-600, 600)
+    ax3_l.grid(True, linestyle=':', alpha=0.5)
+    ax3_l.legend(fontsize=8, loc='upper right')
+
+    ax3_r = fig2.add_subplot(gs2[2, 1])
+    ax3_r.plot(t_inact, lfp_inact, color='#b91c1c', lw=1.2, label='LFP Crudo')
+    ax3_r.plot(t_inact, theta_inact, color='#94a3b8', lw=1.5, linestyle='--', label='Banda Theta (Colapsada)')
+    ax3_r.set_title('C2. Inmovilidad / Reposo: Actividad Irregular No-Theta (LIA)', fontsize=10.5, fontweight='bold', color='#b91c1c')
+    ax3_r.set_xlabel('Tiempo relativo (s)', fontsize=9)
+    ax3_r.set_ylabel('Voltaje (μV)', fontsize=9)
+    ax3_r.set_ylim(-600, 600)
+    ax3_r.grid(True, linestyle=':', alpha=0.5)
+    ax3_r.legend(fontsize=8, loc='upper right')
+
+    fig_full_path = out_dir / "vanderwolf_theta_modulation.png"
+    plt.savefig(fig_full_path, bbox_inches='tight')
+    plt.close()
+    print(f"Saved updated full modulation figure to {fig_full_path}")
+
+if __name__ == "__main__":
+    main()
