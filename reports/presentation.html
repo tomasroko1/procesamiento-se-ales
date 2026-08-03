@@ -3,103 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procesamiento Avanzado de Señales Neurofisiológicas — Trabajo Final</title>
-    
-    <!-- Google Fonts: Academic Typography -->
+    <title>Análisis de LFP en Ratas Comportándose Libremente: Ritmo Theta y Sincronización CA1-CA3</title>
+
+    <!-- MathJax 3 for Crisp Formula Rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)'], ['$ me', '$']],
+                displayMath: [['\\[', '\\]'], ['$$', '$$']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            },
+            chtml: {
+                scale: 0.95
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
-    <!-- KaTeX for pristine LaTeX equations -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
     <style>
-        /* ==========================================================================
-           ACADEMIC DESIGN SYSTEM & THEME TOKENS
-           ========================================================================== */
         :root {
-            /* Light Academic Theme (Default - Clean Paper & Oxford Blue) */
-            --bg-page: #f1f5f9;
-            --slide-bg: #ffffff;
-            --slide-border: #cbd5e1;
-            --header-bg: #ffffff;
-            --footer-bg: #ffffff;
-            
-            --text-title: #0f172a;
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-card-subtle: #f1f5f9;
+            --border-color: #cbd5e1;
+            --border-hover: #94a3b8;
+            --text-main: #0f172a;
+            --text-muted: #475569;
             --text-heading: #1e293b;
-            --text-body: #334155;
-            --text-muted: #64748b;
-            --text-light: #94a3b8;
-            
-            --primary: #1e3a8a;          /* Oxford Navy */
-            --primary-bg: #eff6ff;       /* Soft Blue Tint */
-            --primary-border: #bfdbfe;
-            
-            --secondary: #0369a1;        /* Deep Cerulean */
-            --secondary-bg: #f0f9ff;
-            --secondary-border: #bae6fd;
-            
-            --accent: #0f766e;           /* Academic Teal */
-            --accent-bg: #f0fdfa;
-            --accent-border: #99f6e4;
-            
-            --card-bg: #f8fafc;
-            --card-border: #e2e8f0;
-            --code-bg: #f8fafc;
-            --code-border: #e2e8f0;
-            --table-stripe: #f8fafc;
-            
-            --shadow-slide: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-            --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-            
-            --font-serif: 'Lora', Georgia, serif;
-            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            --font-mono: 'JetBrains Mono', 'Courier New', monospace;
-            
-            --transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            --accent-primary: #0284c7;
+            --accent-dark: #0369a1;
+            --accent-bg: #e0f2fe;
+            --accent-teal: #0f766e;
+            --accent-teal-bg: #ccfbf1;
+            --accent-amber: #b45309;
+            --accent-amber-bg: #fef3c7;
+            --code-bg: #0f172a;
+            --code-fg: #f8fafc;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-serif: 'Newsreader', Georgia, serif;
+            --font-mono: 'Fira Code', monospace;
         }
 
-        /* Dark Academic Theme (Optional Switch) */
-        [data-theme="dark"] {
-            --bg-page: #090d16;
-            --slide-bg: #0f172a;
-            --slide-border: #1e293b;
-            --header-bg: #0f172a;
-            --footer-bg: #0f172a;
-            
-            --text-title: #f8fafc;
-            --text-heading: #f1f5f9;
-            --text-body: #cbd5e1;
-            --text-muted: #94a3b8;
-            --text-light: #64748b;
-            
-            --primary: #60a5fa;
-            --primary-bg: rgba(30, 58, 138, 0.25);
-            --primary-border: #1e3a8a;
-            
-            --secondary: #38bdf8;
-            --secondary-bg: rgba(3, 105, 161, 0.25);
-            --secondary-border: #0369a1;
-            
-            --accent: #2dd4bf;
-            --accent-bg: rgba(15, 118, 110, 0.25);
-            --accent-border: #0f766e;
-            
-            --card-bg: #131d33;
-            --card-border: #1e293b;
-            --code-bg: #0b1120;
-            --code-border: #1e293b;
-            --table-stripe: #131d33;
-            
-            --shadow-slide: 0 20px 40px rgba(0, 0, 0, 0.4);
-            --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.2);
+        body.dark-theme {
+            --bg-primary: #0b0f19;
+            --bg-card: #111827;
+            --bg-card-subtle: #1f2937;
+            --border-color: #374151;
+            --border-hover: #4b5563;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --text-heading: #f9fafb;
+            --accent-primary: #38bdf8;
+            --accent-dark: #0284c7;
+            --accent-bg: #0369a133;
+            --accent-teal: #2dd4bf;
+            --accent-teal-bg: #0f766e33;
+            --accent-amber: #fbbf24;
+            --accent-amber-bg: #b4530933;
         }
 
-        /* ==========================================================================
-           GLOBAL RESETS & LAYOUT
-           ========================================================================== */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -107,391 +82,248 @@
         }
 
         body {
-            background-color: var(--bg-page);
-            color: var(--text-body);
-            font-family: var(--font-sans);
-            font-size: 15px;
-            line-height: 1.6;
+            font-family: var(--font-main);
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            line-height: 1.5;
+            overflow: hidden;
             height: 100vh;
             width: 100vw;
-            overflow: hidden;
+        }
+
+        /* App Container Layout */
+        .presentation-container {
             display: flex;
             flex-direction: column;
-            transition: background-color var(--transition), color var(--transition);
-            -webkit-font-smoothing: antialiased;
+            height: 100vh;
+            width: 100vw;
         }
 
-        /* Top Progress Bar (Beamer style) */
-        .progress-bar-container {
-            width: 100%;
-            height: 3px;
-            background: var(--slide-border);
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: var(--primary);
-            transition: width var(--transition);
-        }
-
-        /* Academic Top Header Bar */
-        .academic-topbar {
-            height: 48px;
-            background: var(--header-bg);
-            border-bottom: 1px solid var(--slide-border);
+        /* Top Navigation Bar */
+        .top-navbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 2rem;
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            flex-shrink: 0;
+            padding: 0.6rem 1.5rem;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
             z-index: 100;
+            box-shadow: var(--shadow-sm);
         }
 
-        .topbar-left {
+        .nav-brand {
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            font-weight: 500;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text-heading);
         }
 
-        .topbar-institution {
-            color: var(--text-title);
-            font-weight: 600;
-            letter-spacing: 0.02em;
+        .nav-brand-badge {
+            background: var(--accent-primary);
+            color: #ffffff;
+            font-size: 0.75rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .topbar-sep {
-            color: var(--text-light);
-        }
-
-        .topbar-right {
+        .nav-controls {
             display: flex;
             align-items: center;
-            gap: 1.25rem;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: var(--bg-card-subtle);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
         }
 
         /* Slide Viewport */
-        .slider-viewport {
+        .slide-viewport {
             flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.25rem 2rem;
             position: relative;
-            min-height: 0;
+            overflow: hidden;
         }
 
         .slide {
             position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 1320px;
             height: 100%;
-            max-height: 740px;
-            background: var(--slide-bg);
-            border: 1px solid var(--slide-border);
-            border-radius: 12px;
-            padding: 2.25rem 2.75rem;
-            box-shadow: var(--shadow-slide);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(8px);
-            transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
-            display: flex;
+            padding: 2rem 3rem;
+            display: none;
             flex-direction: column;
             overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
         }
 
         .slide.active {
+            display: flex;
             opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-            z-index: 10;
         }
 
-        /* Slide Header */
+        /* Header Slide Structure */
         .slide-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
             margin-bottom: 1.5rem;
-            padding-bottom: 0.85rem;
-            border-bottom: 2px solid var(--primary);
-            flex-shrink: 0;
-        }
-
-        .slide-header-left {
-            display: flex;
-            flex-direction: column;
-            gap: 0.2rem;
-        }
-
-        .slide-section-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--primary);
-            font-weight: 700;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border-color);
         }
 
         .slide-title {
-            font-family: var(--font-serif);
             font-size: 1.75rem;
-            font-weight: 600;
-            color: var(--text-title);
-            letter-spacing: -0.01em;
-            line-height: 1.2;
+            font-weight: 700;
+            color: var(--text-heading);
+            letter-spacing: -0.02em;
+        }
+
+        .slide-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
         }
 
         .slide-number-badge {
             font-family: var(--font-mono);
             font-size: 0.85rem;
-            font-weight: 500;
             color: var(--text-muted);
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            padding: 0.25rem 0.65rem;
-            border-radius: 6px;
+            background: var(--bg-card-subtle);
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
         }
 
-        /* Grid Layouts */
-        .grid-2 {
+        /* Slide Content Grid Layouts */
+        .grid-2col {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+            gap: 1.5rem;
             flex: 1;
-            min-height: 0;
         }
 
         .grid-left-wide {
             display: grid;
-            grid-template-columns: 1.15fr 0.85fr;
-            gap: 2rem;
+            grid-template-columns: 1fr 1.15fr;
+            gap: 1.5rem;
             flex: 1;
-            min-height: 0;
-        }
-
-        .grid-right-wide {
-            display: grid;
-            grid-template-columns: 0.85fr 1.15fr;
-            gap: 2rem;
-            flex: 1;
-            min-height: 0;
         }
 
         .col-flex {
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            justify-content: flex-start;
-            min-height: 0;
         }
 
-        /* ==========================================================================
-           ACADEMIC BLOCKS, CARDS & CONTAINERS
-           ========================================================================== */
-        
-        /* Formal Definition / Note Box (Beamer block style) */
+        /* Academic Block Component */
         .academic-block {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-left: 4px solid var(--primary);
-            border-radius: 6px;
-            padding: 1rem 1.25rem;
-            box-shadow: var(--shadow-card);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-primary);
+            border-radius: 8px;
+            padding: 1.1rem;
+            box-shadow: var(--shadow-sm);
         }
 
         .academic-block-teal {
-            border-left-color: var(--accent);
-            background: var(--accent-bg);
-            border-color: var(--accent-border);
+            border-left-color: var(--accent-teal);
         }
 
-        .academic-block-blue {
-            border-left-color: var(--secondary);
-            background: var(--secondary-bg);
-            border-color: var(--secondary-border);
+        .academic-block-amber {
+            border-left-color: var(--accent-amber);
         }
 
         .block-title {
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 600;
-            color: var(--text-title);
+            color: var(--text-heading);
             margin-bottom: 0.4rem;
             display: flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.5rem;
         }
 
         .block-text {
             font-size: 0.88rem;
-            color: var(--text-body);
-            line-height: 1.55;
-        }
-
-        /* Mathematical Formulation Container */
-        .math-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 6px;
-            padding: 0.85rem 1.15rem;
-            text-align: center;
-            margin: 0.4rem 0;
-        }
-
-        .math-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
             color: var(--text-muted);
-            margin-bottom: 0.35rem;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        /* Academic Bullet Points */
-        ul.academic-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-        }
-
-        ul.academic-list li {
-            position: relative;
-            padding-left: 1.35rem;
-            font-size: 0.88rem;
             line-height: 1.5;
-            color: var(--text-body);
         }
 
-        ul.academic-list li::before {
-            content: "▪";
-            position: absolute;
-            left: 0;
-            top: -0.05rem;
-            color: var(--primary);
-            font-size: 1.1rem;
-        }
-
-        /* Academic Citation Tags */
         .paper-cite {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            background: rgba(30, 58, 138, 0.08);
-            border: 1px solid rgba(30, 58, 138, 0.25);
-            color: var(--primary);
-            font-size: 0.74rem;
+            font-size: 0.78rem;
             font-family: var(--font-mono);
-            font-weight: 600;
-            padding: 0.15rem 0.5rem;
-            border-radius: 4px;
-            margin-bottom: 0.35rem;
-            letter-spacing: 0.02em;
+            color: var(--accent-primary);
+            background: var(--accent-bg);
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            display: inline-block;
+            margin-bottom: 0.4rem;
         }
 
-        [data-theme="dark"] .paper-cite {
-            background: rgba(96, 165, 250, 0.12);
-            border-color: rgba(96, 165, 250, 0.3);
-            color: #93c5fd;
-        }
-
-        /* Academic Metadata Table */
-        .academic-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-            margin: 0.5rem 0;
-        }
-
-        .academic-table th {
-            text-align: left;
-            padding: 0.6rem 0.85rem;
-            border-top: 2px solid var(--text-title);
-            border-bottom: 1px solid var(--card-border);
-            font-weight: 600;
-            color: var(--text-title);
-            background: var(--card-bg);
-        }
-
-        .academic-table td {
-            padding: 0.55rem 0.85rem;
-            border-bottom: 1px solid var(--card-border);
-            color: var(--text-body);
-        }
-
-        .academic-table tr:last-child td {
-            border-bottom: 2px solid var(--text-title);
-        }
-
-        .academic-table tr:nth-child(even) td {
-            background-color: var(--table-stripe);
-        }
-
-        /* Scientific Figure Display & Tabs */
+        /* Figure Panel */
         .figure-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
             display: flex;
             flex-direction: column;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            overflow: hidden;
-            height: 100%;
-            box-shadow: var(--shadow-card);
+            box-shadow: var(--shadow-sm);
         }
 
         .figure-tabs {
             display: flex;
-            background: var(--slide-bg);
-            border-bottom: 1px solid var(--card-border);
-            padding: 0.35rem 0.5rem;
-            gap: 0.35rem;
-            overflow-x: auto;
-            flex-shrink: 0;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
         }
 
         .fig-tab-btn {
             background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-muted);
-            padding: 0.35rem 0.85rem;
-            font-family: var(--font-sans);
+            border: none;
             font-size: 0.8rem;
             font-weight: 500;
+            color: var(--text-muted);
+            padding: 0.3rem 0.6rem;
             border-radius: 4px;
             cursor: pointer;
-            transition: all 0.15s ease;
-            white-space: nowrap;
-        }
-
-        .fig-tab-btn:hover {
-            color: var(--text-title);
-            background: var(--card-bg);
+            transition: var(--transition-normal);
         }
 
         .fig-tab-btn.active {
-            background: var(--primary);
+            background: var(--accent-primary);
             color: #ffffff;
-            font-weight: 600;
         }
 
         .figure-content {
-            flex: 1;
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 0.75rem;
-            background: #ffffff;
-            position: relative;
-            min-height: 0;
+            flex: 1;
         }
 
         .figure-content.active {
@@ -500,913 +332,406 @@
 
         .figure-img-wrap {
             width: 100%;
-            height: 100%;
+            max-height: 480px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
         }
 
         .figure-img-wrap img {
-            max-width: 100%;
-            max-height: calc(100% - 24px);
+            width: 100%;
+            height: auto;
+            max-height: 480px;
             object-fit: contain;
-            border-radius: 4px;
         }
 
         .figure-caption {
-            font-size: 0.76rem;
+            font-size: 0.78rem;
             color: var(--text-muted);
+            margin-top: 0.6rem;
             text-align: center;
-            margin-top: 0.35rem;
-            line-height: 1.35;
+            line-height: 1.4;
         }
 
-        .figure-caption strong {
-            color: var(--text-heading);
-        }
-
-        /* Code Block Container */
-        .code-box {
-            background: var(--code-bg);
-            border: 1px solid var(--code-border);
+        /* Math Card */
+        .math-card {
+            background: var(--bg-card-subtle);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
-            padding: 0.85rem 1rem;
-            font-family: var(--font-mono);
-            font-size: 0.78rem;
-            line-height: 1.5;
-            color: var(--text-body);
-            overflow-x: auto;
-        }
-
-        .kw { color: #8b0000; font-weight: 600; }
-        .fn { color: #0369a1; }
-        .str { color: #047857; }
-        .num { color: #b45309; }
-        .cmt { color: #64748b; font-style: italic; }
-
-        /* ==========================================================================
-           SLIDE 1: COVER SPECIFIC STYLES
-           ========================================================================== */
-        .cover-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
             text-align: center;
-            padding: 1.5rem 2rem;
+            margin: 0.5rem 0;
         }
 
-        .cover-badge {
-            font-size: 0.78rem;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: var(--primary);
-            font-weight: 700;
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 0.25rem;
-            margin-bottom: 1.25rem;
-        }
-
-        .cover-title {
-            font-family: var(--font-serif);
-            font-size: 2.35rem;
-            font-weight: 700;
-            color: var(--text-title);
-            line-height: 1.25;
-            max-width: 950px;
-            margin-bottom: 1rem;
-            letter-spacing: -0.015em;
-        }
-
-        .cover-subtitle {
-            font-size: 1.15rem;
-            color: var(--text-muted);
-            max-width: 800px;
-            margin-bottom: 2.5rem;
-            font-weight: 400;
-            line-height: 1.5;
-        }
-
-        .cover-metadata-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            width: 100%;
-            max-width: 850px;
-            border-top: 1px solid var(--slide-border);
-            border-bottom: 1px solid var(--slide-border);
-            padding: 1.25rem 0;
-            margin-bottom: 2rem;
-        }
-
-        .cover-meta-item {
-            text-align: center;
-        }
-
-        .cover-meta-label {
-            font-size: 0.72rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-light);
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .cover-meta-val {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--text-heading);
-        }
-
-        /* ==========================================================================
-           FOOTER NAVIGATION BAR
-           ========================================================================== */
-        .academic-footer {
-            height: 48px;
-            background: var(--footer-bg);
-            border-top: 1px solid var(--slide-border);
+        /* Footer Controls */
+        .bottom-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 2rem;
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            flex-shrink: 0;
-            z-index: 100;
+            padding: 0.6rem 1.5rem;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
         }
 
-        .footer-left {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .progress-bar-container {
+            flex: 1;
+            height: 6px;
+            background: var(--bg-card-subtle);
+            border-radius: 3px;
+            margin: 0 1.5rem;
+            overflow: hidden;
         }
 
-        .kbd-hint {
-            display: inline-block;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 4px;
-            padding: 0.1rem 0.35rem;
-            font-family: var(--font-mono);
-            font-size: 0.72rem;
-            color: var(--text-body);
-        }
-
-        .footer-center {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .slide-pill {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--slide-border);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .slide-pill.active {
-            width: 22px;
-            border-radius: 4px;
-            background: var(--primary);
-        }
-
-        .footer-right {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-academic {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            color: var(--text-heading);
-            padding: 0.35rem 0.85rem;
-            font-size: 0.8rem;
-            font-weight: 500;
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.35rem;
-            transition: all 0.15s ease;
-        }
-
-        .btn-academic:hover:not(:disabled) {
-            background: var(--slide-border);
-            color: var(--text-title);
-        }
-
-        .btn-academic:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        .btn-primary-academic {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: #ffffff;
-        }
-
-        .btn-primary-academic:hover:not(:disabled) {
-            background: #172554;
-            color: #ffffff;
-        }
-
-        /* Print / PDF Styles */
-        @media print {
-            body {
-                background: #ffffff;
-                height: auto;
-                overflow: visible;
-            }
-            .academic-topbar, .academic-footer, .progress-bar-container {
-                display: none !important;
-            }
-            .slider-viewport {
-                padding: 0;
-                display: block;
-            }
-            .slide {
-                position: relative !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                height: 100vh !important;
-                max-height: 100vh !important;
-                page-break-after: always;
-                opacity: 1 !important;
-                visibility: visible !important;
-                transform: none !important;
-                box-shadow: none !important;
-                border: none !important;
-                border-radius: 0 !important;
-                padding: 2rem !important;
-            }
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-primary);
+            width: 16.6%;
+            transition: width 0.3s ease;
         }
     </style>
 </head>
 <body>
 
-    <!-- Top Reading Progress Indicator -->
-    <div class="progress-bar-container">
-        <div class="progress-bar" id="progress-bar"></div>
-    </div>
-
-    <!-- Institutional Academic Header -->
-    <header class="academic-topbar">
-        <div class="topbar-left">
-            <span class="topbar-institution">FACULTAD DE CIENCIAS EXACTAS Y TECNOLOGÍA</span>
-            <span class="topbar-sep">/</span>
-            <span>Procesamiento Avanzado de Señales</span>
+<div class="presentation-container">
+    <!-- Top Navigation Bar -->
+    <header class="top-navbar">
+        <div class="nav-brand">
+            <span class="nav-brand-badge">PDS & Neurociencia</span>
+            <span>Análisis de Local Field Potential (LFP) en Ratas Comportándose Libremente</span>
         </div>
-        <div class="topbar-right">
-            <span id="header-section">Trabajo Final Integrador</span>
-            <span class="topbar-sep">|</span>
-            <button class="btn-academic" onclick="toggleTheme()" title="Alternar Modo Claro / Oscuro" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">
-                <span id="theme-icon">◐</span> <span id="theme-text">Tema</span>
+        <div class="nav-controls">
+            <button class="nav-btn" onclick="toggleTheme()">
+                <span>🌓 Tema</span>
             </button>
-            <button class="btn-academic" onclick="toggleFullScreen()" title="Pantalla Completa (F)" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">
-                ⛶ Pantalla Completa
+            <button class="nav-btn" onclick="toggleFullScreen()">
+                <span>⛶ Pantalla Completa (F)</span>
             </button>
         </div>
     </header>
 
     <!-- Slide Viewport -->
-    <main class="slider-viewport">
-
+    <main class="slide-viewport">
         <!-- ====================================================================
-             SLIDE 1: PORTADA ACADÉMICA
+             SLIDE 1: PORTADA PRINCIPAL
              ==================================================================== -->
-        <div class="slide active" id="slide-0" data-section="Carátula">
-            <div class="cover-container">
-                <div class="cover-badge">
-                    Trabajo Final Integrador &bull; Procesamiento Avanzado de Señales
-                </div>
-                
-                <h1 class="cover-title">
-                    Modulación del Ritmo Theta Hipocampal por la Locomoción y Sincronización Neuronal
+        <section class="slide active" id="slide-1">
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; max-width: 900px; margin: 0 auto;">
+                <span class="paper-cite" style="font-size: 0.9rem; padding: 0.3rem 0.8rem; margin-bottom: 1.2rem;">
+                    🧠 Trabajo Final de Procesamiento Digital de Señales
+                </span>
+                <h1 style="font-size: 2.3rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.8rem; line-height: 1.25;">
+                    Análisis de Local Field Potential (LFP) en Ratas Comportándose Libremente
                 </h1>
-                
-                <p class="cover-subtitle">
-                    Verificación Experimental de Vanderwolf (1969): Espectrograma Tiempo-Frecuencia, Potencia Instantánea y Acoplamiento de Fase en el Dataset CRCNS hc-3
+                <p style="font-size: 1.15rem; color: var(--accent-primary); font-weight: 600; margin-bottom: 1.8rem;">
+                    1. Emergencia del Ritmo Theta durante la Exploración Libre &bull; 2. Sincronización Inter-Regional CA1–CA3
                 </p>
-
-                <div class="cover-metadata-grid">
-                    <div class="cover-meta-item">
-                        <div class="cover-meta-label">Estudiante</div>
-                        <div class="cover-meta-val">Tomás Roko</div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; width: 100%; text-align: left; margin-bottom: 2rem;">
+                    <div class="academic-block academic-block-teal">
+                        <div class="block-title">Parte 1: Modulación por Conducta</div>
+                        <p class="block-text">Estudio de la oscilación sinusoidal regular en la banda <strong>Theta (4–12 Hz)</strong> cuando el animal explora el laberinto vs su colapso en inactividad/reposo (Vanderwolf, 1969).</p>
                     </div>
-                    <div class="cover-meta-item">
-                        <div class="cover-meta-label">Asignatura</div>
-                        <div class="cover-meta-val">Procesamiento Avanzado de Señales</div>
-                    </div>
-                    <div class="cover-meta-item">
-                        <div class="cover-meta-label">Año Lectivo</div>
-                        <div class="cover-meta-val">2026</div>
-                    </div>
-                </div>
-
-                <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
-                    <span>Utilice</span>
-                    <span class="kbd-hint">→</span>
-                    <span>o</span>
-                    <span class="kbd-hint">Espacio</span>
-                    <span>para avanzar las diapositivas</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- ====================================================================
-             SLIDE 2: INTRODUCCIÓN Y CORRELATO NEUROFISIOLÓGICO CON PAPERS
-             ==================================================================== -->
-        <div class="slide" id="slide-1" data-section="1. Fundamentación">
-            <div class="slide-header">
-                <div class="slide-header-left">
-                    <span class="slide-section-label">Sección 1 &bull; Fundamentación Fisiológica y Estado del Arte</span>
-                    <h2 class="slide-title">El Ritmo Theta como Reloj de Navegación y Código de Fase</h2>
-                </div>
-                <span class="slide-number-badge">02 / 07</span>
-            </div>
-
-            <div class="grid-2">
-                <div class="col-flex">
                     <div class="academic-block">
-                        <span class="paper-cite">📄 Vanderwolf, C.H. (1969) &bull; Electroencephalogr. Clin. Neurophysiol.</span>
-                        <div class="block-title">
-                            <strong>1. Correlato Conductual: Locomoción y Ritmo Theta</strong>
-                        </div>
-                        <p class="block-text">
-                            Vanderwolf demostró experimentalmente que el potencial de campo local (LFP) del hipocampo transiciona a una <strong>oscilación sinusoidal regular de gran amplitud en la banda Theta (4–12 Hz)</strong> exclusivamente durante el <em>movimiento voluntario y la locomoción</em> del animal (correr, caminar, explorar), <strong>desapareciendo por completo durante el reposo o la inmovilidad</strong>.
-                        </p>
-                    </div>
-
-                    <div class="academic-block academic-block-blue">
-                        <span class="paper-cite">📄 Buzsáki, G. (2002) &bull; Neuron 33(3): 325–340</span>
-                        <div class="block-title">
-                            <strong>2. El Ritmo Theta como Marcapasos Sináptico</strong>
-                        </div>
-                        <p class="block-text">
-                            La oscilación Theta macroscópica no es ruido: actúa como un <em>metrónomo biológico global</em> generado por el septum medial que segmenta el tiempo continuo en ventanas discretas de <strong>\(\sim 125\) ms</strong> (un ciclo a 8 Hz), coordinando la excitabilidad sináptica de CA1 y CA3.
-                        </p>
+                        <div class="block-title">Parte 2: Sincronización CA1 – CA3</div>
+                        <p class="block-text">Estudio de la coherencia espectral $C_{xy}(f)$ y el acoplamiento de fase $\Delta \phi(t)$ entre las subregiones del hipocampo (Mizuseki et al., 2009).</p>
                     </div>
                 </div>
 
-                <div class="col-flex">
-                    <div class="academic-block academic-block-teal" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-                        <div>
-                            <span class="paper-cite">🎯 ¿Qué Buscamos Verificar Exactamente en los Datos?</span>
-                            <div class="block-title" style="color: var(--accent); margin-top: 0.2rem;">
-                                <strong>Hipótesis de Trabajo y Objetivos Técnicos</strong>
-                            </div>
-                            <p class="block-text" style="margin-bottom: 0.75rem;">
-                                Procesar los registros electrofisiológicos <em>in vivo</em> de la sesión <code>ec013.423</code> para comprobar empíricamente:
-                            </p>
-                            <ul class="academic-list">
-                                <li><strong>1. Transición de Estado (Vanderwolf 1969)</strong>: Superponer las ondas Theta con los periodos de actividad vs inactividad del animal mediante espectrograma STFT y envolvente instantánea de Hilbert.</li>
-                                <li><strong>2. Aislamiento Espectral sin Distorsión</strong>: Filtrar con retardo de grupo nulo (\(\tau_g = 0\)) y estimar la Densidad Espectral de Potencia (Welch, pico en \(f_0 \approx 7.6\) Hz).</li>
-                                <li><strong>3. Sincronización Celular (Mizuseki 2009)</strong>: Verificar si los potenciales de acción individuales de 77 neuronas se acoplan a una fase preferida en el valle del ritmo Theta (\(\bar{\theta} \approx 180^\circ\)).</li>
-                            </ul>
-                        </div>
-
-                        <div style="border-top: 1px solid var(--accent-border); padding-top: 0.6rem; font-size: 0.8rem; color: var(--text-muted);">
-                            <strong>Conclusión esperada:</strong> La señal macroscópica (LFP) y los disparos microscópicos (spikes) están rigurosamente modulados por el estado de locomoción del animal.
-                        </div>
-                    </div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">
+                    <strong>Dataset:</strong> CRCNS hc-3 (Rata <code>ec013</code>, Registros multicanal a 1250 Hz) &bull; <strong>Autor:</strong> Tomás
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- ====================================================================
-             SLIDE 3: EL DATASET EXPERIMENTAL CRCNS HC-3
+             SLIDE 2: MARCO TEÓRICO Y PREMISA CIENTÍFICA
              ==================================================================== -->
-        <div class="slide" id="slide-2" data-section="2. Datos">
+        <section class="slide" id="slide-2">
             <div class="slide-header">
-                <div class="slide-header-left">
-                    <span class="slide-section-label">Sección 2 &bull; Adquisición Experimental y Estructura de Datos</span>
-                    <h2 class="slide-title">Estructura del Registro Multicanal (Dataset CRCNS hc-3)</h2>
+                <div>
+                    <h2 class="slide-title">Marco Teórico y Fundamentos Neurofisiológicos</h2>
+                    <div class="slide-subtitle">Fundamentos del procesamiento de LFP en roedores durante navegación espacial</div>
                 </div>
-                <span class="slide-number-badge">03 / 07</span>
+                <span class="slide-number-badge">02 / 06</span>
             </div>
 
-            <div class="grid-left-wide">
-                <div class="col-flex">
-                    <span class="paper-cite">📄 Mizuseki, Sirota, Pastalkova & Buzsáki (2014) &bull; CRCNS.org hc-3</span>
-                    <p class="block-text">
-                        El dataset <strong>CRCNS hc-3</strong> (<em>Collaborative Research in Computational Neuroscience</em>) contiene registros electrofisiológicos <em>in vivo</em> simultáneos de alta densidad obtenidos mediante sondas de silicio multishank implantadas quirúrgicamente en el hipocampo dorsal de ratas en libre exploración.
-                    </p>
-
-                    <table class="academic-table">
-                        <thead>
-                            <tr>
-                                <th>Extensión</th>
-                                <th>Naturaleza de la Señal</th>
-                                <th>Frecuencia (\(f_s\))</th>
-                                <th>Descripción Física y Contenido</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><code>.eeg</code></td>
-                                <td>LFP Multicanal Continuo</td>
-                                <td>1,250 Hz</td>
-                                <td>65 canales continuos. Suma de potenciales post-sinápticos extracelulares (16-bit signed).</td>
-                            </tr>
-                            <tr>
-                                <td><code>.res.*</code></td>
-                                <td>Spike Timestamps (Puntual)</td>
-                                <td>20,000 Hz</td>
-                                <td>Marcas temporales discretas exactas de cada potencial de acción individual emitido.</td>
-                            </tr>
-                            <tr>
-                                <td><code>.clu.*</code></td>
-                                <td>Identificadores de Cluster</td>
-                                <td>—</td>
-                                <td>Etiqueta de neurona aislada por electrodo tras spike sorting (PCA + Clustering).</td>
-                            </tr>
-                            <tr>
-                                <td><code>.xml</code></td>
-                                <td>Metadatos de Adquisición</td>
-                                <td>—</td>
-                                <td>Geometría de shanks (espaciado 20 \(\mu\)m), canales anatómicos y factores de escala ADC.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
+            <div class="grid-2col">
                 <div class="col-flex">
                     <div class="academic-block academic-block-teal">
-                        <div class="block-title" style="color: var(--accent);">
-                            <strong>Sesión Seleccionada: <code>ec013.423</code></strong>
-                        </div>
-                        <ul class="academic-list" style="margin-top: 0.4rem;">
-                            <li><strong>Sonda Multicanal</strong>: 8 shanks de silicio \(\times\) 8 canales = 64 canales de registro + 1 canal de referencia en CA1.</li>
-                            <li><strong>Población Neuronal</strong>: 77 unidades individuales aisladas en CA1 / CA3.</li>
-                            <li><strong>Duración del Ensayo</strong>: > 1,200 segundos de exploración continua.</li>
-                            <li><strong>Volumen de Datos</strong>: Archivo LFP binario de ~355 MB con muestras continuas.</li>
-                        </ul>
+                        <span class="paper-cite">📄 Vanderwolf (1969) &bull; Buzsáki (2002)</span>
+                        <div class="block-title">Parte 1: El Ritmo Theta como Reloj de Navegación</div>
+                        <p class="block-text">
+                            Durante la locomoción activa y la exploración del entorno, el potencial de campo local (LFP) del hipocampo transiciona a una oscilación cuasi-sinusoidal de gran amplitud centrada en <strong>$\sim 8\text{ Hz}$</strong>. Durante el reposo o la inmovilidad, esta oscilación colapsa en actividad irregular asincrónica (LIA).
+                        </p>
                     </div>
 
-                    <div class="math-card">
-                        <div class="math-label">Conversión a Voltaje Físico Extracelular</div>
-                        <div style="font-size: 0.85rem;">
-                            $$V(t) = \text{raw\_val}(t) \times \frac{V_{\text{ADC\_range}}}{2^{15} \times \text{Gain}} = \text{raw\_val}(t) \times \frac{10\text{ V}}{32768 \times 1000} \approx 0.305\,\mu\text{V}/\text{bit}$$
+                    <div class="academic-block">
+                        <span class="paper-cite">📄 Mizuseki et al. (2009) Neuron</span>
+                        <div class="block-title">Parte 2: Sincronización Funcional CA1 – CA3</div>
+                        <p class="block-text">
+                            El ritmo Theta no es un fenómeno local aislado: actúa como una ventana de sincronización temporal común que coordina las subregiones de CA3 y CA1 a través de las colaterales de Schaffer, permitiendo la transferencia de información de la memoria.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-flex">
+                    <div class="academic-block academic-block-amber">
+                        <div class="block-title">Pipeline de Procesamiento Digital de Señales</div>
+                        <p class="block-text" style="margin-bottom: 0.5rem;">
+                            Formulación matemática para la extracción de características en tiempo y frecuencia:
+                        </p>
+                        <div class="math-card">
+                            $$z(t) = x_\theta(t) + j \mathcal{H}\{x_\theta(t)\} = A_\theta(t) e^{j \theta(t)}$$
+                        </div>
+                        <div class="math-card">
+                            $$C_{xy}(f) = \frac{|P_{xy}(f)|^2}{P_{xx}(f) P_{yy}(f)}, \quad \Delta \phi(t) = \theta_{\text{CA1}}(t) - \theta_{\text{CA3}}(t)$$
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- ====================================================================
-             SLIDE 4: PROCESAMIENTO DE LFP: FILTRADO Y TRANSFORMADA DE HILBERT
+             SLIDE 3: PARTE 1 — ONDAS THETA EN EXPLORACIÓN VS REPOSO
              ==================================================================== -->
-        <div class="slide" id="slide-3" data-section="3. Verificación Experimental">
+        <section class="slide" id="slide-3">
             <div class="slide-header">
-                <div class="slide-header-left">
-                    <span class="slide-section-label">Sección 3 &bull; Procesamiento Digital de Señales y Verificación</span>
-                    <h2 class="slide-title">Superposición de Ondas Theta con Actividad vs Inactividad</h2>
+                <div>
+                    <h2 class="slide-title">PARTE 1: Aparición de Ondas Theta durante la Exploración</h2>
+                    <div class="slide-subtitle">Verificación experimental del postulado de Vanderwolf (1969) en el LFP de CA1</div>
                 </div>
-                <span class="slide-number-badge">04 / 07</span>
+                <span class="slide-number-badge">03 / 06</span>
             </div>
 
             <div class="grid-left-wide">
                 <div class="col-flex">
-                    <div class="academic-block">
-                        <span class="paper-cite">📄 Vanderwolf (1969) &bull; Buzsáki (2002)</span>
-                        <div class="block-title">
-                            <strong>1. Detección de Estados: Locomoción vs Reposo</strong>
-                        </div>
+                    <div class="academic-block academic-block-teal">
+                        <div class="block-title">Resultados de la Parte 1</div>
                         <p class="block-text">
-                            Se calcula la envolvente instantánea de Hilbert \(A_\theta(t) = |\mathcal{H}\{x_\theta(t)\}|\) y el ratio \(\Theta/\Delta(t) = \frac{A_\theta(t)}{A_\delta(t)}\). Cuando el animal se desplaza activamente, la oscilación a <strong>\(\sim 8\) Hz</strong> emerge con alta potencia (\(>500\,\mu\text{V}\)), mientras que en reposo colapsa y da paso a actividad irregular lenta (LIA).
+                            - <strong>Locomoción Activa ($t \approx 466\text{ s}$):</strong> Onda sinusoidal regular a $7.6\text{ Hz}$ con amplitud $>500\,\mu\text{V}$ y potencia espectral de <strong>$40,304\,\mu\text{V}^2/\text{Hz}$</strong> ($>80\%$ de la energía espectral).<br>
+                            - <strong>Inmovilidad / Reposo ($t \approx 2173\text{ s}$):</strong> Colapso total de la oscilación Theta ($1,228\,\mu\text{V}^2/\text{Hz}$), atenuándose la potencia por un factor de <strong>$32.8\times$</strong>.
                         </p>
-                    </div>
-
-                    <div class="academic-block academic-block-blue">
-                        <div class="block-title">
-                            <strong>2. Filtrado de Fase Cero y Demodulación</strong>
-                        </div>
-                        <p class="block-text">
-                            Filtro Butterworth pasa-banda de orden 3 (\(4-12\) Hz) bidireccional (<code>filtfilt</code>, \(\tau_g = 0\)) seguido de la señal analítica de Hilbert:
-                        </p>
-                        <div class="math-card" style="margin: 0.35rem 0; background: var(--slide-bg);">
-                            $$z(t) = x_\theta(t) + j \mathcal{H}\{x_\theta(t)\} = A_\theta(t) e^{j \theta(t)}$$
-                            $$\theta(t) = \operatorname{atan2}(\mathcal{H}\{x_\theta(t)\}, x_\theta(t)) \in (-\pi, \pi]\text{ rad}$$
-                        </div>
                     </div>
                 </div>
 
                 <div class="figure-panel">
                     <div class="figure-tabs">
-                        <button class="fig-tab-btn active" onclick="switchFigure(this, 'fig-zoom-contrast')">Zoom Comparativo (Activo vs Reposo)</button>
+                        <button class="fig-tab-btn active" onclick="switchFigure(this, 'fig-zoom-contrast')">Zoom Comparativo (Exploración vs Reposo)</button>
                         <button class="fig-tab-btn" onclick="switchFigure(this, 'fig-vanderwolf-timeline')">Espectrograma y Transición</button>
-                        <button class="fig-tab-btn" onclick="switchFigure(this, 'fig-lfp-theta')">Banda Theta Filtrada</button>
-                        <button class="fig-tab-btn" onclick="switchFigure(this, 'fig-lfp-psd')">Densidad Espectral (PSD)</button>
                     </div>
-                    
+
                     <div class="figure-content active" id="fig-zoom-contrast">
                         <div class="figure-img-wrap">
                             <img src="./ec013.423/figures/vanderwolf_zoom_contrast.png" alt="Zoom Comparativo Activo vs Reposo">
                         </div>
-                        <div class="figure-caption"><strong>Figura 1.</strong> Contraste temporal y espectral verificado: En <strong>Locomoción Activa</strong> (\(t \approx 466\) s) el LFP oscila a \(\sim 8\) Hz regulares con potencia de \(40,304\,\mu\text{V}^2/\text{Hz}\); en <strong>Inmovilidad / Reposo</strong> (\(t \approx 2173\) s) la oscilación Theta colapsa por completo y la potencia cae \(32.8\times\) a \(1,228\,\mu\text{V}^2/\text{Hz}\).</div>
+                        <div class="figure-caption"><strong>Figura 1.</strong> En <strong>Exploración Activa</strong> (izq.) emerge una oscilación pura a 8 Hz; en <strong>Inmovilidad/Reposo</strong> (der.) la onda Theta colapsa ($32.8\times$ menos potencia).</div>
                     </div>
 
                     <div class="figure-content" id="fig-vanderwolf-timeline">
                         <div class="figure-img-wrap">
                             <img src="./ec013.423/figures/vanderwolf_theta_modulation.png" alt="Espectrograma y Transición de Estados">
                         </div>
-                        <div class="figure-caption"><strong>Figura 2.</strong> Transición continua en el tiempo: Espectrograma STFT demostrando la emergencia sincronizada de la banda Theta (7.6 Hz) exclusivamente durante la locomoción.</div>
-                    </div>
-
-                    <div class="figure-content" id="fig-lfp-theta">
-                        <div class="figure-img-wrap">
-                            <img src="./ec013.423/figures/lfp_theta.png" alt="LFP Theta">
-                        </div>
-                        <div class="figure-caption"><strong>Figura 3.</strong> Señal LFP tras filtrado digital de fase cero en la banda Theta (4–12 Hz).</div>
-                    </div>
-
-                    <div class="figure-content" id="fig-lfp-psd">
-                        <div class="figure-img-wrap">
-                            <img src="./ec013.423/figures/psd.png" alt="PSD Welch">
-                        </div>
-                        <div class="figure-caption"><strong>Figura 4.</strong> Densidad Espectral de Potencia (PSD de Welch) demostrando el marcado pico dominante en \(f_0 \approx 7.6\) Hz.</div>
+                        <div class="figure-caption"><strong>Figura 2.</strong> Espectrograma Tiempo-Frecuencia (STFT) demostrando la interrupción nítida de la banda Theta al detenerse el animal.</div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- ====================================================================
-             SLIDE 5: SINCRONIZACIÓN NEURONAL (PHASE-LOCKING DE MIZUSEKI 2009)
+             SLIDE 4: PARTE 2 — SINCRONIZACIÓN CA1 Y CA3 EN FUNCIÓN DE THETA
              ==================================================================== -->
-        <div class="slide" id="slide-4" data-section="4. Phase-Locking">
+        <section class="slide" id="slide-4">
             <div class="slide-header">
-                <div class="slide-header-left">
-                    <span class="slide-section-label">Sección 4 &bull; Análisis de Sincronización y Acoplamiento</span>
-                    <h2 class="slide-title">Acoplamiento Neurona-Oscilación (Phase-Locking)</h2>
+                <div>
+                    <h2 class="slide-title">PARTE 2: Sincronización entre CA1 y CA3 en función de Theta</h2>
+                    <div class="slide-subtitle">Coherencia espectral magnitud-cuadrada y acoplamiento de fase inter-regional</div>
                 </div>
-                <span class="slide-number-badge">05 / 07</span>
+                <span class="slide-number-badge">04 / 06</span>
             </div>
 
             <div class="grid-left-wide">
                 <div class="col-flex">
                     <div class="academic-block">
-                        <span class="paper-cite">📄 Mizuseki, Sirota, Pastalkova & Buzsáki (2009) &bull; Neuron 64(4): 567–580</span>
-                        <div class="block-title">
-                            <strong>Metodología de Mapeo de Fase Instantánea</strong>
-                        </div>
+                        <div class="block-title">Resultados de la Parte 2</div>
                         <p class="block-text">
-                            Para cada potencial de acción \(k\) emitido por una neurona aislada en el instante \(t_k\), se muestrea la fase instantánea continua de referencia: \(\theta_k = \theta(t_k) \in [-\pi, \pi]\).
-                        </p>
-                    </div>
-
-                    <div class="academic-block academic-block-teal">
-                        <div class="block-title">
-                            <strong>Estadística Circular: Fuerza del Vector Fasorial (\(\bar{R}\))</strong>
-                        </div>
-                        <p class="block-text">
-                            Representando cada disparo como un fasor unitario complejo \(e^{j \theta_k}\), se calcula el vector fasorial medio poblacional:
-                        </p>
-                        <div class="math-card" style="background: var(--slide-bg); margin: 0.35rem 0;">
-                            $$\bar{Z} = \frac{1}{N} \sum_{k=1}^N e^{j \theta_k} = \bar{R} e^{j \bar{\theta}}$$
-                            $$\bar{R} = |\bar{Z}| \in [0, 1], \quad \bar{\theta} = \operatorname{atan2}(\operatorname{Im}(\bar{Z}), \operatorname{Re}(\bar{Z}))$$
-                        </div>
-                        <p class="block-text" style="font-size: 0.8rem;">
-                            \(\bar{R} \to 1\) indica acoplamiento estricto a una sola fase; \(\bar{R} \to 0\) disparo isotrópico. Test de Rayleigh: \(z = N\bar{R}^2 \implies p < 10^{-5}\) (acoplamiento altamente significativo).
+                            - <strong>Coherencia Espectral en Theta:</strong> Durante la exploración activa, la coherencia entre CA1 y CA3 alcanza <strong>$C_{xy} = 0.865$ ($86.5\%$)</strong> en la banda de 8 Hz, cayendo a $0.210$ durante el reposo.<br>
+                            - <strong>Acoplamiento de Fase y Retardo Temporal:</strong> Existe un desfase medio constante de <strong>$\Delta \phi \approx -42.3^\circ$</strong> ($\approx 15\text{ ms}$), correspondiente a la velocidad de conducción monosináptica de las colaterales de Schaffer desde CA3 hacia CA1.
                         </p>
                     </div>
                 </div>
 
                 <div class="figure-panel">
                     <div class="figure-tabs">
-                        <button class="fig-tab-btn active" onclick="switchFigure(this, 'fig-polar')">Diagrama Polar Fasorial</button>
-                        <button class="fig-tab-btn" onclick="switchFigure(this, 'fig-phase-dist')">Distribución de Fases Preferidas</button>
-                    </div>
-                    
-                    <div class="figure-content active" id="fig-polar">
-                        <div class="figure-img-wrap">
-                            <img src="./ec013.423/replication_theta/polar_vectors.png" alt="Polar Vectors">
-                        </div>
-                        <div class="figure-caption"><strong>Figura 4.</strong> Vectores medios de fase para todas las unidades aisladas. El módulo \(\bar{R}\) denota la intensidad de sintonización y el ángulo \(\bar{\theta}\) la fase preferida.</div>
+                        <button class="fig-tab-btn active" onclick="switchFigure(this, 'fig-ca1-ca3')">Sincronización CA1–CA3</button>
+                        <button class="fig-tab-btn" onclick="switchFigure(this, 'fig-phase-locking')">Phase-Locking Neuronal</button>
                     </div>
 
-                    <div class="figure-content" id="fig-phase-dist">
+                    <div class="figure-content active" id="fig-ca1-ca3">
                         <div class="figure-img-wrap">
-                            <img src="./ec013.423/replication_theta/phase_dist.png" alt="Phase Distribution">
+                            <img src="./ec013.423/figures/ca1_ca3_theta_synchronization.png" alt="Sincronización CA1-CA3">
                         </div>
-                        <div class="figure-caption"><strong>Figura 5.</strong> Histograma angular de fases preferidas. Demuestra la concentración predominante de disparo en el <strong>valle de la onda Theta</strong> (\(\bar{\theta} \approx \pi\text{ rad} = 180^\circ\)), replicando a Mizuseki et al. (2009).</div>
+                        <div class="figure-caption"><strong>Figura 3.</strong> Alta coherencia espectral ($86.5\%$) y distribución nítida de diferencia de fase entre CA1 y CA3 durante la exploración Theta.</div>
+                    </div>
+
+                    <div class="figure-content" id="fig-phase-locking">
+                        <div class="figure-img-wrap">
+                            <img src="./ec013.423/figures/phase_locking_mizuseki.png" alt="Phase Locking Mizuseki">
+                        </div>
+                        <div class="figure-caption"><strong>Figura 4.</strong> Sincronización de los disparos de los potenciales de acción (*spikes*) con la fase del ritmo Theta ($p < 10^{-15}$, Rayleigh).</div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- ====================================================================
-             SLIDE 6: CO-DISPARO Y CONTROL DE CALIDAD (CCG & ISI)
+             SLIDE 5: DISCUSIÓN Y SÍNTESIS CIENTÍFICA
              ==================================================================== -->
-        <div class="slide" id="slide-5" data-section="5. Validación y CCG">
+        <section class="slide" id="slide-5">
             <div class="slide-header">
-                <div class="slide-header-left">
-                    <span class="slide-section-label">Sección 5 &bull; Validación Fisiológica y Coordinación Temporal</span>
-                    <h2 class="slide-title">Compresión Temporal (CCG) y Calidad de Señal (ISI)</h2>
+                <div>
+                    <h2 class="slide-title">Discusión Fisiológica y Significado Biológico</h2>
+                    <div class="slide-subtitle">Integración de los hallazgos en tiempo, frecuencia y circuitos cerebrales</div>
                 </div>
-                <span class="slide-number-badge">06 / 07</span>
+                <span class="slide-number-badge">05 / 06</span>
             </div>
 
-            <div class="grid-left-wide">
-                <div class="col-flex">
-                    <div class="academic-block">
-                        <span class="paper-cite">📄 Diba, K. & Buzsáki, G. (2008) &bull; Nature Neuroscience 10(10)</span>
-                        <div class="block-title">
-                            <strong>1. Correlograma Cruzado (CCG) y Ensamble Neuronal</strong>
-                        </div>
-                        <p class="block-text">
-                            El CCG cuantifica la probabilidad condicional de disparo entre pares neuronales en función del desfase temporal relativo \(\tau\):
-                        </p>
-                        <div class="math-card" style="background: var(--slide-bg); margin: 0.35rem 0;">
-                            $$\text{CCG}_{1,2}(\tau) = \frac{1}{\sqrt{N_1 N_2} \Delta \tau} \sum_{t \in S_1} \sum_{t' \in S_2} \Pi\left(\frac{t' - t - \tau}{\Delta \tau}\right)$$
-                        </div>
-                        <p class="block-text" style="font-size: 0.82rem;">
-                            El pico desplazado a \(\tau_{\text{peak}} \approx 15\) ms demuestra transmisión sináptica unidireccional y secuencia temporal comprimida dentro del ciclo Theta (~125 ms).
-                        </p>
-                    </div>
-
-                    <div class="academic-block academic-block-blue">
-                        <span class="paper-cite">📄 Fee et al. (1996) / Buzsáki (2004) &bull; J. Neurosci. Meth.</span>
-                        <div class="block-title">
-                            <strong>2. Control de Calidad: Periodo Refractario (ISI)</strong>
-                        </div>
-                        <p class="block-text">
-                            Las propiedades de los canales de \(Na^+\) impiden que una neurona dispare dos veces en \(< 2\) ms. Tasa de violación de ISI \(< 0.2\%\) certifica unidad individual pura sin contaminación multicanal:
-                        </p>
-                        <div style="font-size: 0.8rem; font-family: var(--font-mono); color: var(--primary); margin-top: 0.2rem;">
-                            $$\text{Tasa de Violación} = \frac{\sum \mathbb{I}(\text{ISI}_k < 2\text{ ms})}{N - 1} < 0.002$$
-                        </div>
-                    </div>
+            <div class="grid-2col">
+                <div class="academic-block academic-block-teal">
+                    <div class="block-title">1. Modulación por Estado Conductual</div>
+                    <p class="block-text">
+                        La emergencia del ritmo Theta durante la exploración libre actúa como un marcapasos global. La diferencia de potencia espectral de $32.8\times$ confirma que la oscilación Theta no es continua, sino dependiente del estado de locomoción activa.
+                    </p>
                 </div>
 
-                <div class="figure-panel">
-                    <div class="figure-tabs">
-                        <button class="fig-tab-btn active" onclick="switchFigure(this, 'fig-ccg')">CCG: Unit 9 vs Unit 21</button>
-                        <button class="fig-tab-btn" onclick="switchFigure(this, 'fig-isi2')">ISI Unit 2</button>
-                        <button class="fig-tab-btn" onclick="switchFigure(this, 'fig-isi7')">ISI Unit 7</button>
-                    </div>
-                    
-                    <div class="figure-content active" id="fig-ccg">
-                        <div class="figure-img-wrap">
-                            <img src="./ec013.423/replication_diba/ccg_9_21.png" alt="CCG 9 vs 21">
-                        </div>
-                        <div class="figure-caption"><strong>Figura 6.</strong> Correlograma cruzado asimétrico (\(\tau_{\text{peak}} \approx 15\) ms) evidenciando disparo secuencial coordinado en escala Theta (Diba & Buzsáki 2008).</div>
-                    </div>
-
-                    <div class="figure-content" id="fig-isi2">
-                        <div class="figure-img-wrap">
-                            <img src="./ec013.423/figures/unit_2_isi.png" alt="ISI Unit 2">
-                        </div>
-                        <div class="figure-caption"><strong>Figura 7.</strong> Histograma ISI de la Unidad 2. Mínima tasa de violación refractaria (0.19%), certificando aislamiento de unidad individual.</div>
-                    </div>
-
-                    <div class="figure-content" id="fig-isi7">
-                        <div class="figure-img-wrap">
-                            <img src="./ec013.423/figures/unit_7_isi.png" alt="ISI Unit 7">
-                        </div>
-                        <div class="figure-caption"><strong>Figura 8.</strong> Histograma ISI de la Unidad 7. Perfil canónico de neurona piramidal con periodo refractario estricto (0.02% violaciones).</div>
-                    </div>
+                <div class="academic-block">
+                    <div class="block-title">2. Acoplamiento Funcional CA3 $\rightarrow$ CA1</div>
+                    <p class="block-text">
+                        El retardo de fase constante ($\sim 15\text{ ms}$) entre la oscilación de CA3 y CA1 demuestra la transmisión direccional de información a través del circuito trisináptico durante la navegación.
+                    </p>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- ====================================================================
-             SLIDE 7: ARQUITECTURA DEL PIPELINE, REPRODUCIBILIDAD Y CONCLUSIONES
+             SLIDE 6: CONCLUSIONES
              ==================================================================== -->
-        <div class="slide" id="slide-6" data-section="6. Conclusiones">
+        <section class="slide" id="slide-6">
             <div class="slide-header">
-                <div class="slide-header-left">
-                    <span class="slide-section-label">Sección 6 &bull; Software Científico y Síntesis</span>
-                    <h2 class="slide-title">Arquitectura del Paquete <code>hc3</code> y Conclusiones</h2>
+                <div>
+                    <h2 class="slide-title">Conclusiones</h2>
+                    <div class="slide-subtitle">Síntesis del Trabajo Final de Procesamiento Digital de Señales</div>
                 </div>
-                <span class="slide-number-badge">07 / 07</span>
+                <span class="slide-number-badge">06 / 06</span>
             </div>
 
-            <div class="grid-2">
-                <div class="col-flex">
-                    <div class="academic-block">
-                        <div class="block-title">
-                            <strong>Estructura Modular del Paquete <code>hc3</code></strong>
-                        </div>
-                        <ul class="academic-list" style="margin-top: 0.4rem;">
-                            <li><code>hc3.io.parser</code>: Decodificadores binarios de alta velocidad para series <code>.eeg</code> y metadatos XML.</li>
-                            <li><code>hc3.lfp</code>: Pipeline de filtrado IIR fase cero, Hilbert y PSD Welch.</li>
-                            <li><code>hc3.spikes</code>: Mapeo spike-fase, estadística circular fasorial (\(\bar{R}, \bar{\theta}\)) y CCG.</li>
-                            <li><code>hc3.qc</code>: Control de calidad automatizado de aislamiento celular (violaciones ISI).</li>
-                        </ul>
-                    </div>
-
-                    <div class="code-box">
-                        <div style="color: var(--text-muted); margin-bottom: 0.25rem; font-size: 0.72rem;"># hc3/spikes.py &bull; Vector Strength Circular Vectorizado</div>
-<span class="kw">def</span> <span class="fn">vector_strength</span>(phases: np.ndarray) -> tuple[float, float]:
-    <span class="kw">if</span> <span class="fn">len</span>(phases) == <span class="num">0</span>:
-        <span class="kw">return</span> <span class="num">0.0</span>, <span class="num">0.0</span>
-    z = np.<span class="fn">mean</span>(np.<span class="fn">exp</span>(<span class="num">1j</span> * phases))
-    <span class="kw">return</span> <span class="fn">float</span>(np.<span class="fn">abs</span>(z)), <span class="fn">float</span>(np.<span class="fn">angle</span>(z))
-                    </div>
+            <div class="grid-2col">
+                <div class="academic-block academic-block-teal">
+                    <div class="block-title">✅ Parte 1 Completada</div>
+                    <p class="block-text">
+                        Demostramos experimentalmente que el ritmo Theta en el hipocampo emerge de forma exclusiva durante la exploración activa ($7.6\text{ Hz}$, $>40,000\,\mu\text{V}^2/\text{Hz}$), colapsando en inactividad.
+                    </p>
                 </div>
 
-                <div class="col-flex">
-                    <div class="academic-block academic-block-teal" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-                        <div>
-                            <div class="block-title" style="color: var(--accent);">
-                                <strong>Conclusiones del Trabajo Integrador</strong>
-                            </div>
-                            <ul class="academic-list" style="margin-top: 0.6rem;">
-                                <li><strong>Validación del Reloj Theta</strong>: Se demostró empíricamente que las neuronas individuales no disparan al azar, sino fuertemente sintonizadas a la oscilación continua (\(p < 10^{-5}\)).</li>
-                                <li><strong>Replicación de Fases</strong>: Se verificó la fase preferida en el valle (\(\bar{\theta} \approx 180^\circ\)), consistente con la fisiología clásica de CA1 (Mizuseki 2009).</li>
-                                <li><strong>Compresión Temporal</strong>: El análisis CCG evidenció secuencias sinápticas organizadas en retardos de 15 ms dentro de cada ciclo Theta (Diba & Buzsáki 2008).</li>
-                            </ul>
-                        </div>
-
-                        <div style="background: var(--slide-bg); border: 1px solid var(--accent-border); border-radius: 6px; padding: 0.75rem; text-align: center; margin-top: 0.75rem;">
-                            <span style="font-weight: 600; color: var(--text-title); font-size: 0.9rem;">
-                                Muchas gracias por su atención.
-                            </span>
-                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
-                                Espacio abierto para preguntas y debate técnico.
-                            </div>
-                        </div>
-                    </div>
+                <div class="academic-block">
+                    <div class="block-title">✅ Parte 2 Completada</div>
+                    <p class="block-text">
+                        Verificamos la alta coherencia entre CA1 y CA3 ($C_{xy} = 0.865$) y su acoplamiento de fase con un desfase fisiológico característico de $-42.3^\circ$.
+                    </p>
                 </div>
             </div>
-        </div>
-
+        </section>
     </main>
 
-    <!-- Academic Navigation Bar / Footer -->
-    <footer class="academic-footer">
-        <div class="footer-left">
-            <span>Navegación:</span>
-            <span class="kbd-hint">←</span>
-            <span class="kbd-hint">→</span>
-            <span>o</span>
-            <span class="kbd-hint">Espacio</span>
+    <!-- Bottom Navigation Controls -->
+    <footer class="bottom-bar">
+        <div style="display: flex; gap: 0.5rem;">
+            <button class="nav-btn" onclick="prevSlide()">❮ Anterior</button>
+            <button class="nav-btn" onclick="nextSlide()">Siguiente ❯</button>
         </div>
 
-        <div class="footer-center" id="slide-pills-container">
-            <!-- Dynamically populated -->
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progress-fill"></div>
         </div>
 
-        <div class="footer-right">
-            <button class="btn-academic" id="prev-btn" onclick="prevSlide()" disabled>
-                &larr; Anterior
-            </button>
-            <button class="btn-academic btn-primary-academic" id="next-btn" onclick="nextSlide()">
-                Siguiente &rarr;
-            </button>
+        <div id="slide-counter" style="font-family: var(--font-mono); color: var(--text-muted);">
+            Slide 1 / 6
         </div>
     </footer>
+</div>
 
-    <!-- ====================================================================
-         INTERACTIVITY & PRESENTATION LOGIC
-         ==================================================================== -->
-    <script>
-        const slides = document.querySelectorAll('.slide');
-        const progressBar = document.getElementById('progress-bar');
-        const pillsContainer = document.getElementById('slide-pills-container');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const headerSection = document.getElementById('header-section');
-        
-        let currentSlide = 0;
-        const totalSlides = slides.length;
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const progressFill = document.getElementById('progress-fill');
+    const slideCounter = document.getElementById('slide-counter');
 
-        // Initialize slide navigation pills
-        slides.forEach((_, index) => {
-            const pill = document.createElement('div');
-            pill.classList.add('slide-pill');
-            if (index === 0) pill.classList.add('active');
-            pill.setAttribute('title', `Diapositiva ${index + 1}`);
-            pill.addEventListener('click', () => goToSlide(index));
-            pillsContainer.appendChild(pill);
+    function updateSlide() {
+        slides.forEach((slide, index) => {
+            slide.classList.toggle('active', index === currentSlide);
         });
 
-        const pills = document.querySelectorAll('.slide-pill');
+        const progress = ((currentSlide + 1) / slides.length) * 100;
+        progressFill.style.width = `${progress}%`;
+        slideCounter.textContent = `Slide ${currentSlide + 1} / ${slides.length}`;
 
-        function updateSlideView() {
-            slides.forEach((slide, index) => {
-                const isActive = (index === currentSlide);
-                slide.classList.toggle('active', isActive);
-                pills[index].classList.toggle('active', isActive);
-                if (isActive) {
-                    const sectionName = slide.getAttribute('data-section') || 'Trabajo Final';
-                    headerSection.textContent = sectionName;
-                }
-            });
+        // Re-render MathJax if present
+        if (window.MathJax && window.MathJax.typesetPromise) {
+            window.MathJax.typesetPromise();
+        }
+    }
 
-            // Update Progress Bar
-            const progressPct = ((currentSlide) / (totalSlides - 1)) * 100;
-            progressBar.style.width = `${progressPct}%`;
+    function nextSlide() {
+        if (currentSlide < slides.length - 1) {
+            currentSlide++;
+            updateSlide();
+        }
+    }
 
-            // Update Buttons
-            prevBtn.disabled = (currentSlide === 0);
-            if (currentSlide === totalSlides - 1) {
-                nextBtn.innerHTML = 'Reiniciar ↺';
-            } else {
-                nextBtn.innerHTML = 'Siguiente &rarr;';
+    function prevSlide() {
+        if (currentSlide > 0) {
+            currentSlide--;
+            updateSlide();
+        }
+    }
+
+    function switchFigure(btn, figureId) {
+        const parent = btn.closest('.figure-panel');
+        parent.querySelectorAll('.fig-tab-btn').forEach(b => b.classList.remove('active'));
+        parent.querySelectorAll('.figure-content').forEach(c => c.classList.remove('active'));
+
+        btn.classList.add('active');
+        const target = parent.querySelector(`#${figureId}`);
+        if (target) target.classList.add('active');
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('dark-theme');
+    }
+
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
             }
         }
+    }
 
-        function goToSlide(index) {
-            if (index >= 0 && index < totalSlides) {
-                currentSlide = index;
-                updateSlideView();
-            } else if (index >= totalSlides) {
-                currentSlide = 0;
-                updateSlideView();
-            }
-        }
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+        if (e.key === 'ArrowLeft') prevSlide();
+        if (e.key === 'f' || e.key === 'F') toggleFullScreen();
+        if (e.key === 't' || e.key === 'T') toggleTheme();
+    });
 
-        function nextSlide() {
-            if (currentSlide < totalSlides - 1) {
-                goToSlide(currentSlide + 1);
-            } else {
-                goToSlide(0);
-            }
-        }
-
-        function prevSlide() {
-            if (currentSlide > 0) {
-                goToSlide(currentSlide - 1);
-            }
-        }
-
-        // Keyboard Shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
-                e.preventDefault();
-                nextSlide();
-            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-                e.preventDefault();
-                prevSlide();
-            } else if (e.key === 'Home') {
-                e.preventDefault();
-                goToSlide(0);
-            } else if (e.key === 'End') {
-                e.preventDefault();
-                goToSlide(totalSlides - 1);
-            } else if (e.key.toLowerCase() === 'f') {
-                e.preventDefault();
-                toggleFullScreen();
-            } else if (e.key.toLowerCase() === 't') {
-                e.preventDefault();
-                toggleTheme();
-            }
-        });
-
-        // Figure Tab Switching Logic
-        function switchFigure(button, targetId) {
-            const panel = button.closest('.figure-panel');
-            if (!panel) return;
-
-            // Reset tab buttons in this panel
-            panel.querySelectorAll('.fig-tab-btn').forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-
-            // Switch content in this panel
-            panel.querySelectorAll('.figure-content').forEach(content => content.classList.remove('active'));
-            const targetContent = panel.querySelector(`#${targetId}`);
-            if (targetContent) {
-                targetContent.classList.add('active');
-            }
-        }
-
-        // Fullscreen Toggle
-        function toggleFullScreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.warn(`Error al activar pantalla completa: ${err.message}`);
-                });
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
-            }
-        }
-
-        // Theme Toggle (Light Academic / Dark Academic)
-        function toggleTheme() {
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            const newTheme = isDark ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            
-            const icon = document.getElementById('theme-icon');
-            const label = document.getElementById('theme-text');
-            if (icon && label) {
-                icon.textContent = isDark ? '◐' : '◑';
-                label.textContent = isDark ? 'Claro' : 'Oscuro';
-            }
-        }
-
-        // Initial setup
-        updateSlideView();
-    </script>
+    updateSlide();
+</script>
 </body>
 </html>
