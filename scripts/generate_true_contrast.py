@@ -92,12 +92,15 @@ def main():
                transform=ax_tr.transAxes, fontsize=8.5, fontweight='bold', color='#b91c1c',
                bbox=dict(boxstyle='round,pad=0.35', facecolor='#fee2e2', edgecolor='#b91c1c', alpha=0.9))
 
+    idx_theta = (f_act >= 4) & (f_act <= 12)
+    peak_f_act = f_act[idx_theta][np.argmax(p_act[idx_theta])]
+
     # B1. PSD Active
     ax_bl = axes[1, 0]
     mask_f = (f_act >= 1) & (f_act <= 25)
     ax_bl.plot(f_act[mask_f], p_act[mask_f], color='#0f766e', lw=2.2, label='Locomoción Activa')
     ax_bl.axvspan(4, 12, color='#0284c7', alpha=0.15, label='Banda Theta (4–12 Hz)')
-    ax_bl.axvline(7.6, color='#0284c7', linestyle=':', lw=1.5, label='Pico Theta (7.6 Hz)')
+    ax_bl.axvline(peak_f_act, color='#0284c7', linestyle=':', lw=1.8, label=f'Pico Theta ({peak_f_act:.1f} Hz)')
     ax_bl.set_title('B1. Espectro de Potencia (PSD) en Movimiento', fontsize=10.5, fontweight='bold', pad=6)
     ax_bl.set_xlabel('Frecuencia (Hz)', fontsize=9.5)
     ax_bl.set_ylabel('Densidad de Potencia (μV²/Hz)', fontsize=9.5)
