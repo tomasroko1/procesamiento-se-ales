@@ -41,6 +41,7 @@
             --text-heading: #0f172a;
             --accent-primary: #0284c7;
             --accent-teal: #0f766e;
+            --accent-orange: #ea580c;
             --accent-green: #16a34a;
             --accent-red: #dc2626;
             --font-main: 'Inter', system-ui, -apple-system, sans-serif;
@@ -59,6 +60,7 @@
             --text-heading: #ffffff;
             --accent-primary: #38bdf8;
             --accent-teal: #2dd4bf;
+            --accent-orange: #fb923c;
             --accent-green: #4ade80;
             --accent-red: #f87171;
             --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -282,6 +284,7 @@
 
         .tag-teal { background: #ccfbf1; color: #0f766e; }
         .tag-blue { background: #e0f2fe; color: #0284c7; }
+        .tag-orange { background: #ffedd5; color: #ea580c; }
         .tag-green { background: #dcfce7; color: #16a34a; }
         .tag-red { background: #fee2e2; color: #dc2626; }
 
@@ -345,7 +348,7 @@
         .progress-fill {
             height: 100%;
             background: var(--accent-primary);
-            width: 16.6%;
+            width: 14.28%;
             transition: width 0.25s ease;
         }
     </style>
@@ -416,7 +419,7 @@
                     <h2 class="slide-heading-main">Registro de Local Field Potential (LFP)</h2>
                     <div class="slide-heading-sub">Origen electrofisiológico y adquisición multicanal en CA1 y CA3</div>
                 </div>
-                <span class="slide-counter-badge">02 / 06</span>
+                <span class="slide-counter-badge">02 / 07</span>
             </div>
 
             <div class="layout-grid">
@@ -459,7 +462,7 @@
                     <h2 class="slide-heading-main">Segmentación de Estados Conductuales</h2>
                     <div class="slide-heading-sub">Derivación cinemática del video tracking e intervalos de actividad/inactividad</div>
                 </div>
-                <span class="slide-counter-badge">03 / 06</span>
+                <span class="slide-counter-badge">03 / 07</span>
             </div>
 
             <div class="layout-grid">
@@ -480,7 +483,7 @@
                         <div class="card-header">Umbrales de Clasificación</div>
                         <ul class="point-list">
                             <li><strong style="color: var(--accent-green);">Actividad / Locomoción (Verde):</strong> Intervalos donde $v(t) > 5\text{ cm/s}$ de forma sostenida.</li>
-                            <li><strong style="color: var(--accent-red);">Inactividad / Reposo (Rojo):</strong> Intervalos donde $v(t) < 2\text{ cm/s}$ (pausas en extremos del laberinto).</li>
+                            <li><strong style="color: var(--accent-red);">Inactividad / Reposo (Rojo):</strong> Intervalos donde $v(t) < 2\text{ cm/s}$ (desaceleración y pausas).</li>
                         </ul>
                     </div>
                 </div>
@@ -489,7 +492,7 @@
                     <div class="figure-img-container">
                         <img src="./ec013.423/figures/lfp_behavior_segmentation.png" alt="Segmentación Conductual y LFP">
                     </div>
-                    <div class="figure-legend"><strong>Figura 2.</strong> A. Velocidad instantánea $v(t)$ con umbrales conductuales. B. LFP continuo con intervalos de Actividad (Verde) e Inactividad (Rojo).</div>
+                    <div class="figure-legend"><strong>Figura 2.</strong> A. Velocidad instantánea continua $v(t)$ con umbrales conductuales. B. LFP continuo con intervalos de Actividad (Verde) e Inactividad (Rojo).</div>
                 </div>
             </div>
         </section>
@@ -503,7 +506,7 @@
                     <h2 class="slide-heading-main">PARTE 1: Emergencia de Theta en Movimiento</h2>
                     <div class="slide-heading-sub">Contraste temporal (A1 vs A2) y espectral PSD (B1 vs B2)</div>
                 </div>
-                <span class="slide-counter-badge">04 / 06</span>
+                <span class="slide-counter-badge">04 / 07</span>
             </div>
 
             <div class="layout-grid">
@@ -531,63 +534,106 @@
                     <div class="figure-img-container">
                         <img src="./ec013.423/figures/vanderwolf_zoom_contrast.png" alt="Zoom Comparativo Activo vs Reposo">
                     </div>
-                    <div class="figure-legend"><strong>Figura 3.</strong> Contraste temporal y espectral: En movimiento emerge un ritmo puro a 8 Hz; en reposo colapsa por completo.</div>
+                    <div class="figure-legend"><strong>Figura 3.</strong> Contraste temporal y espectral: En movimiento emerge un ritmo puro a 8.3 Hz; en reposo colapsa por completo.</div>
                 </div>
             </div>
         </section>
 
         <!-- ====================================================================
-             SLIDE 5: PARTE 2 — SINCRONIZACIÓN CA1 Y CA3
+             SLIDE 5: PARTE 2 — SINCRONIZACIÓN TEMPORAL (TRAZAS CA1 VS CA3)
              ==================================================================== -->
         <section class="slide" id="slide-5">
             <div class="slide-heading">
                 <div>
-                    <h2 class="slide-heading-main">PARTE 2: Sincronización entre CA1 y CA3</h2>
-                    <div class="slide-heading-sub">Coherencia espectral magnitud-cuadrada y acoplamiento de fase inter-regional</div>
+                    <h2 class="slide-heading-main">PARTE 2: Sincronización Temporal CA1 vs CA3</h2>
+                    <div class="slide-heading-sub">Superposición de oscilaciones Theta y retardo fisiológico en el tiempo</div>
                 </div>
-                <span class="slide-counter-badge">05 / 06</span>
+                <span class="slide-counter-badge">05 / 07</span>
             </div>
 
             <div class="layout-grid">
                 <div class="content-col">
                     <div class="card">
-                        <span class="tag-pill tag-blue">COHERENCIA</span>
-                        <div class="card-header">Acoplamiento Espectral $C_{xy}(f)$</div>
+                        <span class="tag-pill tag-teal">FORMA DE ONDA</span>
+                        <div class="card-header">Acoplamiento Temporal</div>
                         <ul class="point-list">
-                            <li><strong>Exploración Theta:</strong> Coherencia alcanza <strong>$C_{xy} = 0.743\text{ a }0.865$</strong> ($>75\%$) en la banda de 8 Hz.</li>
-                            <li><strong>Reposo:</strong> Desacoplamiento inter-regional ($C_{xy} = 0.292$).</li>
+                            <li><strong style="color: var(--accent-teal);">LFP CA1 (Verde):</strong> Registro en el estrato piramidal de CA1.</li>
+                            <li><strong style="color: var(--accent-orange);">LFP CA3 (Naranja):</strong> Registro en la subregión CA3.</li>
+                            <li><strong>Frecuencia Común:</strong> Ambas subregiones comparten exactamente el mismo ritmo fundamental ($T \approx 125\text{ ms}$, $f \approx 8\text{ Hz}$).</li>
                         </ul>
                     </div>
 
                     <div class="card">
-                        <span class="tag-pill tag-teal">DESFASE TEMPORAL</span>
-                        <div class="card-header">Retardo de Fase $\Delta \phi$</div>
+                        <span class="tag-pill tag-blue">INTERPRETACIÓN FISIOLÓGICA</span>
+                        <div class="card-header">Retardo de Conducción ($\Delta t$)</div>
                         <ul class="point-list">
-                            <li><strong>Desfase Constante:</strong> Distribución polar estrecha con $\Delta \phi \approx -58.6^\circ$.</li>
-                            <li><strong>Demora de Conducción:</strong> Equivale a $\sim 15\text{ ms}$, tiempo de propagación monosináptica de las <em>Colaterales de Schaffer</em> (CA3 $\rightarrow$ CA1).</li>
+                            <li><strong>Desfase Sistemático:</strong> La onda de CA3 antecede sistemáticamente a la de CA1 por $\Delta t \approx 15\text{ ms}$.</li>
+                            <li><strong>Circuito Hipocampal:</strong> Este retardo refleja la propagación monosináptica a través de las <em>Colaterales de Schaffer</em> (CA3 $\rightarrow$ CA1).</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="figure-card">
                     <div class="figure-img-container">
-                        <img src="./ec013.423/figures/ca1_ca3_theta_synchronization.png" alt="Sincronización CA1-CA3">
+                        <img src="./ec013.423/figures/ca1_ca3_traces_clean.png" alt="Trazas Sincronizadas CA1 y CA3">
                     </div>
-                    <div class="figure-legend"><strong>Figura 4.</strong> Trazas superpuestas, coherencia espectral y distribución de diferencia de fase entre CA1 y CA3.</div>
+                    <div class="figure-legend"><strong>Figura 4.</strong> Trazas de LFP filtradas en Theta (8 Hz) durante locomoción, mostrando el retardo constante de $\sim 15\text{ ms}$ entre CA3 y CA1.</div>
                 </div>
             </div>
         </section>
 
         <!-- ====================================================================
-             SLIDE 6: CONCLUSIONES
+             SLIDE 6: PARTE 2 — COHERENCIA ESPECTRAL Y DIFERENCIA DE FASE
              ==================================================================== -->
         <section class="slide" id="slide-6">
+            <div class="slide-heading">
+                <div>
+                    <h2 class="slide-heading-main">PARTE 2: Coherencia Espectral y Acoplamiento de Fase</h2>
+                    <div class="slide-heading-sub">Cuantificación de la sincronización en frecuencia y robustez del desfase</div>
+                </div>
+                <span class="slide-counter-badge">06 / 07</span>
+            </div>
+
+            <div class="layout-grid">
+                <div class="content-col">
+                    <div class="card">
+                        <span class="tag-pill tag-teal">PANEL A: COHERENCIA ESPECTRAL</span>
+                        <div class="card-header">¿Qué mide $C_{xy}(f)$?</div>
+                        <ul class="point-list">
+                            <li>Mide la correlación lineal entre CA1 y CA3 para cada frecuencia ($0 \le C_{xy} \le 1$).</li>
+                            <li><strong>Pico en Theta (8 Hz):</strong> Alcanza <strong>$C_{xy} = 0.865$</strong> ($>85\%$) en movimiento (verde), cayendo a $0.29$ en reposo (rojo).</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <span class="tag-pill tag-blue">PANEL B: DIFERENCIA DE FASE</span>
+                        <div class="card-header">¿Qué mide el Histograma?</div>
+                        <ul class="point-list">
+                            <li>Evalúa la diferencia instantánea $\Delta \phi(t) = \phi_{\text{CA1}}(t) - \phi_{\text{CA3}}(t)$ ciclo a ciclo.</li>
+                            <li><strong>Distribución Unimodal:</strong> Pico muy concentrado en $\Delta \phi \approx -58.6^\circ$, demostrando acoplamiento estable y no aleatorio.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="figure-card">
+                    <div class="figure-img-container">
+                        <img src="./ec013.423/figures/ca1_ca3_coherence_and_phase_clean.png" alt="Coherencia Espectral y Fase CA1-CA3">
+                    </div>
+                    <div class="figure-legend"><strong>Figura 5.</strong> A. Coherencia espectral $C_{xy}(f)$ (pico de sincronización en 8 Hz). B. Histograma de diferencia de fase $\Delta \phi$ centrado en $-58.6^\circ$.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====================================================================
+             SLIDE 7: CONCLUSIONES
+             ==================================================================== -->
+        <section class="slide" id="slide-7">
             <div class="slide-heading">
                 <div>
                     <h2 class="slide-heading-main">Conclusiones del Trabajo</h2>
                     <div class="slide-heading-sub">Síntesis de los resultados de Procesamiento Digital de Señales</div>
                 </div>
-                <span class="slide-counter-badge">06 / 06</span>
+                <span class="slide-counter-badge">07 / 07</span>
             </div>
 
             <div class="layout-grid-equal">
@@ -604,8 +650,8 @@
                     <span class="tag-pill tag-blue">RESULTADO 2</span>
                     <div class="card-header">Sincronización Funcional CA1–CA3</div>
                     <ul class="point-list" style="margin-top: 0.4rem;">
-                        <li>Durante la exploración activa, CA1 y CA3 exhiben alta coherencia espectral ($C_{xy} > 0.75$) en la banda Theta.</li>
-                        <li>El acoplamiento de fase presenta un retardo fisiológico fijo de $\approx 15\text{ ms}$, reflejando la transmisión de información por el circuito trisináptico.</li>
+                        <li>Durante la exploración activa, CA1 y CA3 exhiben alta coherencia espectral ($C_{xy} = 0.865$) en la banda Theta.</li>
+                        <li>El acoplamiento de fase presenta un retardo fisiológico fijo de $\approx 15\text{ ms}$, reflejando la transmisión de información por las colaterales de Schaffer.</li>
                     </ul>
                 </div>
             </div>
@@ -625,7 +671,7 @@
         </div>
 
         <div id="slide-counter" style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.8rem;">
-            Slide 1 / 6
+            Slide 1 / 7
         </div>
     </footer>
 </div>

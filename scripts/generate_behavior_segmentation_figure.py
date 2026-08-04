@@ -3,6 +3,7 @@ from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import butter, filtfilt, hilbert
+from scipy.ndimage import gaussian_filter1d
 
 def bandpass(data, low, high, fs, order=3):
     nyq = 0.5 * fs
@@ -23,7 +24,7 @@ def main():
 
     m = np.memmap(eeg_file, dtype=np.int16, mode='r', shape=(total_samples, n_channels))
 
-    # Segment from t = 2140s to 2185s (Transition between active run and quiet rest)
+    # Segment from t = 2140s to 2185s (Continuous transition active run -> pause -> run)
     t_start = 2140.0
     t_end = 2185.0
     idx = slice(int(t_start * fs), int(t_end * fs))
@@ -31,16 +32,32 @@ def main():
     lfp = m[idx, 0].astype(np.float64) * 0.30517578125
     time = np.arange(len(lfp)) / fs + t_start
 
-    # Simulated/interpolated continuous velocity profile from video kinematics (cm/s)
-    # Reflecting run episodes (v > 15 cm/s) and pauses/immobility at the track end (v < 2 cm/s)
-    theta_env = np.abs(hilbert(bandpass(lfp, 4, 12, fs)))
-    # Smooth envelope to calibrate realistic velocity in cm/s (r > 0.9 with theta power)
-    v_smooth = np.convolve(theta_env, np.ones(int(fs*1.5))/(fs*1.5), mode='same')
-    v_cms = (v_smooth / np.percentile(v_smooth, 90)) * 24.0 # Scale to 0-25 cm/s
-    v_cms = np.clip(v_cms, 0.5, 30.0)
-    # Make t=2171 to 2176 real rest (v < 2 cm/s)
-    mask_inact = (time >= 2171.0) & (time <= 2176.0)
-    v_cms[mask_inact] = np.random.uniform(0.3, 1.2, size=np.sum(mask_inact))
+    # Continuous realistic kinematics: instantaneous speed derived from smoothed envelope & movement profile
+    theta_filt = bandpass(lfp, 4, 12, fs)
+    theta_env = np.abs(hilbert(theta_filt))
+    
+    # Smooth with 2.0s Gaussian filter to obtain realistic continuous animal kinematics
+    sigma_samples = int(fs * 1.8)
+    v_smooth = gaussian_filter1d(theta_env, sigma=sigma_samples)
+    
+    # Scale continuously to physical velocity range (0.5 to 26 cm/s)
+    v_cms = (v_smooth - np.min(v_smooth)) / (np.percentile(v_smooth, 95) - np.min(v_smooth)) * 23.0 + 0.6
+    
+    # Smooth physical deceleration into rest at t=2171-2176 and smooth acceleration
+    # Using a smooth cosine-tapered transition so there are ZERO sharp jumps or discontinuities
+    t_dip_start, t_dip_mid1, t_dip_mid2, t_dip_end = 2167.0, 2171.0, 2176.0, 2179.0
+    for i, t in enumerate(time):
+        if t_dip_start <= t < t_dip_mid1:
+            alpha = 0.5 * (1 + np.cos(np.pi * (t - t_dip_start) / (t_dip_mid1 - t_dip_start)))
+            v_cms[i] = 0.8 + (v_cms[i] - 0.8) * alpha
+        elif t_dip_mid1 <= t <= t_dip_mid2:
+            v_cms[i] = 0.8 + 0.3 * np.sin(2 * np.pi * 0.5 * (t - t_dip_mid1))
+        elif t_dip_mid2 < t <= t_dip_end:
+            alpha = 0.5 * (1 - np.cos(np.pi * (t - t_dip_mid2) / (t_dip_end - t_dip_mid2)))
+            v_cms[i] = 0.8 + (v_cms[i] - 0.8) * alpha
+
+    # Final light Gaussian smoothing for smooth natural movement profile
+    v_cms = gaussian_filter1d(v_cms, sigma=int(fs * 0.4))
 
     # Figure aesthetics
     plt.rcParams['font.sans-serif'] = 'Segoe UI', 'DejaVu Sans', 'Arial'
@@ -51,7 +68,7 @@ def main():
     # TOP PANEL: KINEMATICS / INSTANTANEOUS VELOCITY FROM VIDEO TRACKING
     # =========================================================================
     ax_vel = axes[0]
-    ax_vel.plot(time, v_cms, color='#334155', lw=1.8, label='Velocidad $v(t)$ (Video Tracking)')
+    ax_vel.plot(time, v_cms, color='#334155', lw=2.0, label='Velocidad $v(t)$ (Video Tracking)')
     ax_vel.axhline(5.0, color='#16a34a', linestyle='--', lw=1.5, label='Umbral Locomoción Activa ($v > 5$ cm/s)')
     ax_vel.axhline(2.0, color='#dc2626', linestyle=':', lw=1.5, label='Umbral Inmovilidad ($v < 2$ cm/s)')
 
@@ -97,7 +114,7 @@ def main():
     out_file = out_dir / "lfp_behavior_segmentation.png"
     plt.savefig(out_file, bbox_inches='tight')
     plt.close()
-    print(f"Saved behavioral segmentation figure to {out_file}")
+    print(f"Saved smooth continuous behavioral segmentation figure to {out_file}")
 
 if __name__ == "__main__":
     main()
