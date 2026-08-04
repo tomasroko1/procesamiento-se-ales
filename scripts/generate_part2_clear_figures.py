@@ -126,7 +126,7 @@ def main():
     ax_phase.set_xlim(-180, 180)
     ax_phase.grid(True, linestyle=':', alpha=0.6)
     ax_phase.legend(loc='upper right', fontsize=8.8, framealpha=0.95)
-    ax_phase.text(0.05, 0.78, f'• Distribución unimodal estrecha\n• Desfase $\\approx {mean_dphi:.0f}^\\circ \\approx 15\\text{{ ms}}$\n• Retardo monosináptico Schaffer', 
+    ax_phase.text(0.05, 0.78, f'• Distribución unimodal estrecha\n• Desfase $\\approx {mean_dphi:.0f}^\\circ \\approx 15\\text{{ ms}}$\n• Retardo trisináptico (Mizuseki 2009)', 
                   transform=ax_phase.transAxes, fontsize=8.8, fontweight='bold', color='#0369a1',
                   bbox=dict(boxstyle='round,pad=0.3', facecolor='#e0f2fe', edgecolor='#0284c7', alpha=0.9))
 
